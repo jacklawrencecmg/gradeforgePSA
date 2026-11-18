@@ -1,6 +1,17 @@
-# GradeForge v0.4 — data-validated PSA prediction system (Gem Mint engine on the v0.2 inspection pipeline)
+# GradeForge v0.5.2 — PSA Card Grading Pre-Assessment with Stripe Paywall
 
 Evidence-based PSA grade **ceilings** from card photographs. A pre-grading aid, not a PSA opinion.
+
+## 🚀 Quick Deploy to Render (Free Tier)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/jacklawrencecmg/gradeforgePSA)
+
+**One-click deploy** - Just click above and follow the prompts!
+
+**After deployment:**
+1. Add Stripe keys to environment variables (Render dashboard)
+2. Visit your app URL and register admin account
+3. Start grading cards! 🎉
 
 v0.2 replaces the single-photo wear checks with a multi-stage inspection pipeline: card alignment, registration of
 several photos of the same card, comparison of evidence under different lighting, defect candidates with annotated
