@@ -1,0 +1,40 @@
+{
+  "database_version": "1.0.0",
+  "compiled_on": "2026-11-02",
+  "official_source": "https://www.psacard.com/gradingstandards",
+  "official_page_verified": false,
+  "verification_note": "The official PSA pages could not be read during compilation (the site blocks automated requests). Every numeric value below comes from secondary sources that quote or summarize PSA's published standards. Compare each value against the official page before relying on it, then set official_page_verified to true and bump database_version.",
+  "centering_measure": "Larger border share on the worse axis, in percent (60 means 60/40).",
+  "front_leeway_pct": 5,
+  "leeway_applies_to_grades_at_or_above": 7,
+  "leeway_note": "Secondary sources report that PSA allows a 5 percent leeway on front centering for cards grading 7 or better, and may permit a small variance based on overall eye appeal. GradeForge uses the leeway only for its optimistic ceiling, never for the conservative one.",
+  "known_conflicts": [
+    "Older guides and some retailer pages give 60/40 as the PSA 10 front limit. Current secondary sources quote approximately 55/45 front and 75/25 back. GradeForge uses 55/45 and 75/25.",
+    "Isolated sources list different values for PSA 6, 7 and 8 (for example 75/25, 80/20, 95/5). The values below are the ones most sources agree on.",
+    "One secondary source states that PSA's page contains no numeric centering tolerances for any grade. Treat all numeric limits as approximate until checked against the official page."
+  ],
+  "grades": {
+    "10": {"name": "Gem Mint", "front_max_pct": 55, "back_max_pct": 75, "centering_status": "secondary_corroborated",
+           "summary": "Virtually perfect card: four sharp corners, sharp focus, full original gloss, no staining."},
+    "9":  {"name": "Mint", "front_max_pct": 60, "back_max_pct": 90, "centering_status": "secondary_corroborated",
+           "summary": "Superb card that tolerates one minor flaw, such as a slight wax stain on the back, a minor print imperfection, or slightly off-white borders."},
+    "8":  {"name": "Near Mint-Mint", "front_max_pct": 65, "back_max_pct": 90, "centering_status": "secondary_corroborated",
+           "summary": "Looks like a 9 at first glance; may show slight fraying at one or two corners, a minor print flaw, or slight staining."},
+    "7":  {"name": "Near Mint", "front_max_pct": 70, "back_max_pct": 90, "centering_status": "secondary_corroborated",
+           "summary": "Slight surface wear and slight corner fraying visible."},
+    "6":  {"name": "Excellent-Mint", "front_max_pct": 80, "back_max_pct": 90, "centering_status": "secondary_corroborated",
+           "summary": "Visible surface wear or a print defect that does not detract from overall appeal."},
+    "5":  {"name": "Excellent", "front_max_pct": 85, "back_max_pct": 90, "centering_status": "secondary_single_source",
+           "summary": "Minor corner rounding is evident; surface wear and print defects are more visible; borders may look off-white."},
+    "4":  {"name": "Very Good-Excellent", "front_max_pct": null, "back_max_pct": null, "centering_status": "unverified",
+           "summary": "Slightly rounded corners; surface wear is noticeable but modest."},
+    "3":  {"name": "Very Good", "front_max_pct": 90, "back_max_pct": 90, "centering_status": "secondary_single_source",
+           "summary": "Corner rounding is evident but not extreme; wear is apparent, possibly with light scuffing or scratches."},
+    "2":  {"name": "Good", "front_max_pct": 90, "back_max_pct": 90, "centering_status": "secondary_single_source",
+           "summary": "Accelerated corner rounding; surface wear is obvious."},
+    "1":  {"name": "Poor", "front_max_pct": 90, "back_max_pct": 90, "centering_status": "secondary_single_source",
+           "summary": "Card is complete but heavily worn."}
+  },
+  "qualifiers_not_modeled": ["OC (off-center)", "MK (marks)", "ST (stain)", "PD (print defect)", "OF (out of focus)", "MC (miscut)"],
+  "not_modeled_note": "GradeForge v0.1 does not predict qualifiers and does not model PSA's authentication or alteration checks."
+}

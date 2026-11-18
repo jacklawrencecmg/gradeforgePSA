@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GradeForge</title>
+<style>
+  :root { --bg:#0a0e14; --panel:#0f1419; --line:#1f2937; --text:#f0f4f8; --muted:#8b95a7; --accent:#3b82f6;
+          --ok:#10b981; --warn:#f59e0b; --bad:#ef4444; --unk:#6b7280;
+          --shadow:0 4px 12px rgba(0,0,0,0.3); --shadow-lg:0 12px 24px rgba(0,0,0,0.4); }
+  @media (prefers-color-scheme: light) { :root { --bg:#f8fafc; --panel:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --accent:#2563eb;
+          --ok:#059669; --warn:#d97706; --bad:#dc2626; --unk:#4b5563; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif; background:var(--bg); color:var(--text); transition:background-color 0.2s, color 0.2s; }
+  header { padding:20px 24px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; background:linear-gradient(135deg, var(--panel) 0%, rgba(59,130,246,0.03) 100%); }
+  header h1 { margin:0; font-size:28px; font-weight:800; background:linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:-0.5px; } header span { color:var(--muted); font-size:14px; font-weight:500; }
+  nav { display:flex; gap:2px; padding:12px 24px 0; border-bottom:1px solid var(--line); background:var(--panel); }
+  nav button { background:none; border:0; color:var(--muted); padding:12px 16px; cursor:pointer; font:inherit; border-bottom:3px solid transparent; transition:all 0.2s ease; font-weight:500; font-size:14px; }
+  nav button:hover { color:var(--text); background:rgba(59,130,246,0.08); }
+  nav button.on { color:var(--accent); border-bottom-color:var(--accent); background:rgba(59,130,246,0.08); }
+  main { max-width:1200px; margin:0 auto; padding:24px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.1); transition:all 0.2s ease; }
+  .panel:hover { box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+  .grid { display:grid; gap:16px; } .g2 { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+  label { display:block; font-size:14px; color:var(--muted); margin-bottom:8px; font-weight:600; letter-spacing:0.5px; }
+  input[type=file], input[type=text], input[type=password], input[type=number], select, textarea { width:100%; padding:12px 14px; background:var(--bg); color:var(--text); border:1.5px solid var(--line); border-radius:8px; font:inherit; transition:all 0.2s ease; }
+  input[type=file]:focus, input[type=text]:focus, input[type=password]:focus, input[type=number]:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent); background:rgba(59,130,246,0.03); box-shadow:0 0 0 3px rgba(59,130,246,0.1); }
+  button.primary { background:linear-gradient(135deg, var(--accent) 0%, #2563eb 100%); color:#fff; border:0; padding:12px 24px; border-radius:8px; font-weight:600; cursor:pointer; font:inherit; transition:all 0.2s ease; box-shadow:var(--shadow); font-size:15px; }
+  button.primary:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+  button.primary:active { transform:translateY(0); }
+  button.primary:disabled { opacity:0.5; cursor:wait; transform:none; }
+  button.ghost { background:transparent; border:1.5px solid var(--line); color:var(--text); padding:10px 18px; border-radius:8px; cursor:pointer; font:inherit; transition:all 0.2s ease; font-weight:500; font-size:14px; }
+  button.ghost:hover { border-color:var(--accent); background:rgba(59,130,246,0.08); color:var(--accent); }
+  .stats { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); }
+  .stat { border:1px solid var(--line); border-radius:10px; padding:16px; background:linear-gradient(135deg, rgba(59,130,246,0.03) 0%, transparent 100%); transition:all 0.2s ease; }
+  .stat:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(59,130,246,0.1); }
+  .stat b { display:block; font-size:28px; color:var(--accent); margin-bottom:4px; }
+  .stat small { color:var(--muted); font-weight:500; }
+  .chip { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; border:1px solid var(--line); font-weight:600; transition:all 0.2s ease; }
+  .pass_observed { color:var(--ok); border-color:var(--ok); background:rgba(16,185,129,0.08); } .borderline { color:var(--warn); border-color:var(--warn); background:rgba(245,158,11,0.08); }
+  .fail_observed,.fail_candidate,.fail_nominal_leeway_possible { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); }
+  .unknown_not_assessed { color:var(--unk); border-color:var(--unk); background:rgba(107,114,128,0.08); }
+  table { width:100%; border-collapse:collapse; font-size:14px; } th,td { text-align:left; padding:12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:700; letter-spacing:0.5px; background:rgba(59,130,246,0.03); }
+  tr:hover { background:rgba(59,130,246,0.03); }
+  .muted { color:var(--muted); } .note { font-size:13px; color:var(--muted); }
+  .banner { border-left:4px solid var(--warn); padding:12px 16px; background:rgba(245,158,11,0.08); border-radius:8px; margin-bottom:12px; font-size:14px; }
+  .viewer { position:relative; background:#000; border-radius:12px; overflow:hidden; touch-action:none; height:min(70vh,640px); box-shadow:var(--shadow); }
+  .viewer canvas { width:100%; height:100%; display:block; cursor:grab; }
+  .toggles { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0; font-size:14px; } .toggles label { display:inline-flex; gap:6px; align-items:center; margin:0; color:var(--text); cursor:pointer; }
+  details { margin:8px 0; } summary { cursor:pointer; color:var(--accent); font-weight:600; }
+  .hidden { display:none; }
+  .split { display:grid; gap:16px; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); } @media (max-width:860px){ .split { grid-template-columns:1fr; } }
+  .flist { max-height:280px; overflow:auto; border:1px solid var(--line); border-radius:10px; background:rgba(59,130,246,0.02); }
+  .frow { padding:10px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:14px; display:flex; gap:10px; align-items:baseline; transition:all 0.15s ease; }
+  .frow:hover, .frow.sel { background:rgba(59,130,246,0.1); border-left:3px solid var(--accent); padding-left:9px; } .frow .id { font-family:ui-monospace,monospace; color:var(--muted); font-size:12px; }
+  .physical { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); } .indeterminate { color:var(--warn); border-color:var(--warn); background:rgba(245,158,11,0.08); }
+  .artifact { color:var(--unk); border-color:var(--unk); background:rgba(107,114,128,0.08); } .confirmed { color:var(--ok); border-color:var(--ok); background:rgba(16,185,129,0.08); } .rejected { color:var(--unk); text-decoration:line-through; opacity:0.6; }
+  .crops { display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
+  .crop { border:1px solid var(--line); border-radius:8px; padding:6px; font-size:12px; background:var(--bg); overflow:hidden; }
+  .crop img { width:100%; image-rendering:pixelated; background:#000; display:block; cursor:zoom-in; border-radius:4px; transition:transform 0.2s ease; } .crop:hover img { transform:scale(1.05); } .crop label { display:flex; gap:4px; align-items:center; margin:4px 0 0; color:var(--muted); font-size:11px; }
+  .fail_confirmed { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); }
+  .gem { border-left:4px solid var(--accent); background:rgba(59,130,246,0.03); padding:12px; border-radius:0 8px 8px 0; }
+  .v_credible_candidate { color:var(--ok); border-color:var(--ok); background:rgba(16,185,129,0.08); } .v_uncertain { color:var(--warn); border-color:var(--warn); background:rgba(245,158,11,0.08); }
+  .v_unlikely,.v_ruled_out { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); } .v_insufficient_evidence { color:var(--unk); border-color:var(--unk); background:rgba(107,114,128,0.08); }
+  .clear { color:var(--ok); border-color:var(--ok); background:rgba(16,185,129,0.08); } .minor_concern,.limited,.unresolved { color:var(--warn); border-color:var(--warn); background:rgba(245,158,11,0.08); }
+  .blocks_10,.severe { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); } .not_assessable { color:var(--unk); border-color:var(--unk); background:rgba(107,114,128,0.08); }
+  button.ghost.on { border-color:var(--accent); color:var(--accent); background:rgba(59,130,246,0.1); }
+  .side { border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:14px; background:rgba(59,130,246,0.02); } .cat { border-top:1px solid var(--line); padding:8px 0; } .cat h4 { margin:8px 0 4px; font-weight:700; }
+  .slot input[type=file] { width:100%; } .plain .big { font-size:22px; font-weight:700; } .rangebox { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin:12px 0; }
+  .rangebox > div { border:1px solid var(--line); border-radius:10px; padding:12px; background:linear-gradient(135deg, rgba(59,130,246,0.03) 0%, transparent 100%); transition:all 0.2s ease; }
+  .rangebox > div:hover { border-color:var(--accent); }
+  .rangebox b { display:block; font-size:24px; color:var(--accent); margin-bottom:4px; } .rangebox small { color:var(--muted); font-weight:500; }
+  .acctbar { font-size:14px; display:flex; gap:8px; align-items:center; } .acctbar .chip { margin:0; }
+  .pricing { border:2px solid var(--accent); border-radius:12px; padding:24px; max-width:520px; background:linear-gradient(135deg, rgba(59,130,246,0.05) 0%, transparent 100%); box-shadow:var(--shadow); } .pricing .price { font-size:40px; font-weight:900; color:var(--accent); margin:12px 0; } .pricing .price small { font-size:16px; font-weight:500; color:var(--muted); }
+  dialog { border:1px solid var(--line); border-radius:14px; background:var(--panel); color:var(--text); padding:24px; width:min(420px,92vw); box-shadow:var(--shadow-lg); } dialog::backdrop { background:rgba(0,0,0,0.6); }
+  dialog input, dialog select { width:100%; margin:8px 0 14px; } .err { color:var(--bad); font-size:14px; min-height:1.4em; font-weight:500; }
+  .big { font-size:24px; font-weight:800; margin:8px 0; color:var(--text); }
+  textarea { width:100%; padding:12px 14px; background:var(--bg); color:var(--text); border:1.5px solid var(--line); border-radius:8px; font:inherit; }
+</style>
+</head>
+<body>
+<header><h1>GradeForge</h1><span>Evidence-based PSA grade ceilings from card photos. A pre-grading aid, not a PSA opinion.</span><div id="acct" style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div></header>
+<div id="notice" class="hidden" style="max-width:1100px;margin:10px auto 0;padding:0 16px"></div>
+<nav id="tabs">
+  <button data-tab="analyze" class="on">Analyze</button><button data-tab="batch">Batch</button><button data-tab="history">History</button><button data-tab="dataset">Dataset &amp; validation</button><button data-tab="reliability">Accuracy &amp; feedback</button><button data-tab="admin" class="hidden">Admin</button><button data-tab="standards">PSA criteria</button>
+</nav>
+<main>
+<section id="tab-analyze">
+  <form id="form" class="panel">
+    <div id="slots"></div>
+    <div class="grid g2">
+      <div><label>Card finish (changes which checks are flagged as most important)</label>
+        <select name="finish"><option value="unknown">Not sure / other</option><option value="standard">Standard cardboard</option><option value="chrome">Chrome</option><option value="refractor">Refractor</option><option value="foil_holo">Foil / holo</option><option value="matte">Matte</option></select></div>
+      <div><label>Card label</label><input type="text" name="label" maxlength="120" placeholder="e.g. 2023 Charizard ex #223"></div>
+    </div>
+    <p class="note">For scratch, dent, crease and gloss checks give at least two photos of the same side with the light coming from clearly different directions. Best results: card at least 1200 px wide, photographed square-on against a plain contrasting background, diffuse light. Dark-bordered cards allow whitening checks; light borders do not.</p>
+    <button class="primary" id="go" type="submit">Analyze card</button> <span id="status" class="muted"></span>
+  </form>
+  <div id="result"></div>
+</section>
+
+<section id="tab-admin" class="hidden"><div id="adminbox"></div></section>
+
+<section id="tab-batch" class="hidden">
+  <form id="bform" class="panel">
+    <label>ZIP of images named &lt;card&gt;_front.jpg and &lt;card&gt;_back.jpg (max 100 cards)</label>
+    <input type="file" name="archive" accept=".zip" required><br><br>
+    <button class="primary" type="submit">Analyze batch</button> <span id="bstatus" class="muted"></span>
+  </form>
+  <div id="bresult"></div>
+</section>
+
+<section id="tab-history" class="hidden"><div id="hist"></div></section>
+<section id="tab-dataset" class="hidden"><div id="ds"></div></section>
+<section id="tab-reliability" class="hidden"><div id="rel"></div></section>
+<section id="tab-standards" class="hidden"><div id="stds"></div></section>
+</main>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+function el(tag, attrs={}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) { if (k==='class') n.className=v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k,v); }
+  for (const c of kids.flat()) if (c!=null) n.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return n;
+}
+const pretty = s => String(s ?? '').replaceAll('_',' ');
+const chip = s => el('span', {class:'chip '+s}, pretty(s));
+
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x===b));
+  document.querySelectorAll('main > section').forEach(s => s.classList.toggle('hidden', s.id !== 'tab-'+b.dataset.tab));
+  if (b.dataset.tab==='history') loadHistory();
+  if (b.dataset.tab==='admin') loadAdmin();
+  if (b.dataset.tab==='standards') loadStandards();
+  if (b.dataset.tab==='reliability') loadReliability();
+});
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) { let d = r.statusText; try { d = (await r.json()).detail || d; } catch {}
+    const e = new Error(typeof d === 'object' ? d.message : (typeof d === 'string' ? d : 'Request failed')); e.status = r.status; e.detail = d; throw e; }
+  return r.json();
+}
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('#go'), st = $('#status'); btn.disabled = true; st.textContent = 'Analyzing… large photos can take a few seconds.';
+  try {
+    const fd = new FormData(e.target);
+    const data = await api('/api/analyze', {method:'POST', body:fd});
+    st.textContent = ''; renderResult($('#result'), data); refreshMe();
+  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#result')); refreshMe(); } else st.textContent = 'Error: ' + err.message; }
+  btn.disabled = false;
+});
+
+function statBox(label, value, sub) { return el('div', {class:'stat'}, el('small',{},label), el('b',{}, value ?? '—'), sub ? el('small',{},sub) : null); }
+
+function srcTag(s) { return el('span', {class:'chip', title:'official = PSA wording; secondary = third-party reports; model = GradeForge assumption'}, s); }
+function gemPanel(data) {
+  const g = data.gem; const root = el('div', {class:'panel gem'});
+  if (!g) return root;
+  const e = g.psa10_eligibility;
+  root.append(el('h2', {style:'margin:0 0 4px'}, 'Gem Mint analysis'),
+    el('div', {class:'big'}, el('span', {class:'chip v_'+e.status}, pretty(e.status)), ' ', e.label),
+    el('p', {}, e.summary + (e.basis === 'unconfirmed_candidates' ? ' This rests on UNCONFIRMED detector candidates: confirm or reject them in the defect map.' : '')));
+  const ml = g.most_likely;
+  root.append(el('div', {class:'stats'},
+    statBox('Most likely grade', ml.grade ?? 'not given', ml.basis ? 'basis: ' + ml.basis.replace('_',' ') : ml.note),
+    statBox('Ceiling (conservative)', g.grade_ceiling.conservative, 'highest grade the evidence supports'),
+    statBox('Ceiling (optimistic)', g.grade_ceiling.optimistic, 'best case incl. measurement error'),
+    statBox('Evidence sufficient', g.evidence_sufficient ? 'yes' : 'no', 'every photo-checkable item assessed and reviewed')));
+  root.append(el('p', {class:'note'}, g.dominance.rule + (g.dominance.binding_characteristics.length ? ' Binding: ' + g.dominance.binding_characteristics.map(pretty).join(', ') + '.' : '')));
+  const list = (title, items, render) => items.length ? [el('h3', {}, title), el('ul', {}, items.map(render))] : [];
+  root.append(...list('Reasons this card may receive a PSA 9 or lower', g.reasons_psa9, r => el('li', {}, r.text, ' ', el('span', {class:'chip'}, pretty(r.strength)), ' ', srcTag(r.source), r.findings.length ? el('span', {class:'note'}, ' findings: ' + r.findings.join(', ')) : null)));
+  const clearOnes = g.reasons_psa10_plausible;
+  if (clearOnes.length) { const d = el('details', {open:''}, el('summary', {}, `Evidence keeping a PSA 10 plausible (${clearOnes.length})`), el('ul', {}, clearOnes.map(r => el('li', {}, r.text, ' ', srcTag(r.source), r.caveat ? el('div', {class:'note'}, r.caveat) : null)))); root.append(d); }
+  if (!g.reasons_psa9.length && !clearOnes.length) root.append(el('p', {class:'muted'}, 'No evidence either way yet.'));
+  root.append(...list('Additional inspection required', g.additional_inspection, p => el('li', {}, el('b', {}, `[${p.type}] ${p.what}. `), p.how)));
+  if (g.photographic_limitations.length) root.append(el('details', {}, el('summary', {}, `Defects that photo limits could hide (${g.photographic_limitations.length})`), el('ul', {}, g.photographic_limitations.map(l => el('li', {}, `${l.side} — ${l.region}: ${l.why} Could hide: ${l.could_hide.join(', ')}. Fix: ${l.fix}`)))));
+  const t = el('table', {}, el('tr', {}, el('th',{},'Characteristic'), el('th',{},'Observed'), el('th',{},'Status'), el('th',{},'Basis')));
+  g.characteristics.forEach(c => t.append(el('tr', {}, el('td', {}, c.label, c.human_required ? el('div', {class:'note'}, 'needs a person') : null), el('td', {}, c.observed, c.notes?.length ? el('div', {class:'note'}, c.notes[0]) : null), el('td', {}, el('span', {class:'chip '+c.status}, pretty(c.status))), el('td', {}, srcTag(c.basis)))));
+  root.append(el('details', {}, el('summary', {}, 'Every characteristic evaluated'), t));
+  const sd = g.standards;
+  root.append(el('details', {}, el('summary', {}, 'Official PSA wording vs GradeForge assumptions'),
+    el('p', {class:'note'}, `Criteria database v${sd.database_version}: ` + (sd.official_page_partially_verified ? 'partially verified against psacard.com/gradingstandards (listed items only).' : 'not verified.')),
+    el('h4', {}, 'Official (PSA)'), el('ul', {}, sd.official_items.map(i => el('li', {}, i.text))),
+    el('h4', {}, 'Model assumptions (GradeForge, uncalibrated)'), el('ul', {}, sd.model_assumptions.map(i => el('li', {}, i)))));
+  const rl = g.reliability;
+  root.append(el('p', {class:'note'}, el('b', {}, 'Reliability: '), rl.statement,
+    rl.n_eligible != null ? ` Real PSA outcomes recorded for evaluation: ${rl.n_eligible}.` : '',
+    rl.model_prediction ? ' ' + rl.model_prediction.interpretation : ''));
+  return root;
+}
+
+function assessmentPanel(data) {
+  const a = data.assessment;
+  const panel = el('div', {class:'panel'});
+  panel.append(el('div', {class:'banner'},
+    `Criteria database v${a.standards.database_version}: ` + (a.standards.official_page_verified ? 'verified against PSA.' :
+    'NOT verified against the official PSA page (the site blocked automated reading). Numeric limits come from secondary sources.')));
+  if (a.prediction_status !== 'ceilings_only') {
+    panel.append(el('h2', {}, 'Not enough evidence to grade'),
+      el('p', {}, 'A prediction was not forced. Reasons:'), el('ul', {}, a.reasons.map(r => el('li', {}, r))),
+      el('p', {}, 'To proceed:'), el('ul', {}, a.requests.map(r => el('li', {}, r))));
+    if (Object.keys(a.partial_measurements||{}).length) {
+      panel.append(el('p', {class:'muted'}, 'Partial measurements: ' + Object.entries(a.partial_measurements).map(([k,v]) =>
+        `${pretty(k)} ${v.worst_pct}% ±${v.uncertainty_pct}`).join('; ')));
+    }
+  } else {
+    const p10 = a.psa10_eligibility;
+    panel.append(el('div', {class:'stats'},
+      statBox('Conservative ceiling', a.conservative_ceiling, 'highest grade the evidence supports'),
+      statBox('Optimistic ceiling', a.optimistic_ceiling, 'with best-case error and leeway'),
+      statBox('Most likely grade', 'n/a', 'no calibrated model'),
+      statBox('PSA 10', pretty(p10.status), `evidence: ${a.evidence_level}, ${a.inspection_coverage.assessed}/${a.inspection_coverage.total} items assessed`)),
+      el('p', {}, p10.detail), el('p', {class:'note'}, 'Ceilings are upper bounds: photos cannot confirm every criterion, so a lower grade is always possible. No probabilities are reported.'));
+    panel.append(el('h3', {}, 'PSA 9 versus PSA 10'), el('p', {}, a.nine_vs_ten.summary));
+    const tb = el('table', {}, el('tr', {}, el('th',{},'Criterion'), el('th',{},'Observed'), el('th',{},'Status')));
+    a.checklist.forEach(c => tb.append(el('tr', {}, el('td',{}, c.requirement, c.detail ? el('div',{class:'note'}, c.detail) : null), el('td',{}, c.observed), el('td',{}, chip(c.status)))));
+    panel.append(tb);
+    if (a.grade_limiting.length) panel.append(el('h3', {}, 'Grade-limiting findings'),
+      el('ul', {}, a.grade_limiting.map(g => el('li', {}, `${g.requirement}: ceiling ${g.conservative_cap}–${g.optimistic_cap}. ${g.detail}`))));
+    if (a.requests.length) panel.append(el('h3', {}, 'Better images would help'), el('ul', {}, a.requests.map(r => el('li', {}, r))));
+  }
+  return panel;
+}
+
+
+/* ---------- accounts, paywall, billing ---------- */
+let ME = {paywall:false};
+function notice(text, kind) {
+  const n = $('#notice'); n.classList.remove('hidden'); n.replaceChildren(el('div', {class:'banner', style: kind === 'ok' ? 'border-color:var(--ok)' : ''}, text));
+}
+async function refreshMe() {
+  try { ME = await api('/api/me'); } catch { ME = {paywall:false}; }
+  renderAccount();
+  const admin = !ME.paywall || (ME.user && ME.user.is_admin);
+  document.querySelectorAll('#tabs button').forEach(b => { if (['dataset','reliability'].includes(b.dataset.tab)) b.classList.toggle('hidden', !admin); });
+  $('#tabs button[data-tab=admin]').classList.toggle('hidden', !(ME.paywall && ME.user && ME.user.is_admin));
+}
+function renderAccount() {
+  const box = $('#acct'); box.replaceChildren(); box.className = 'acctbar';
+  if (!ME.paywall) return;
+  if (!ME.user) {
+    box.append(el('span', {class:'muted'}, ME.free_available ? 'Your first grade is free, no account needed.' : 'Free grade used.'),
+      el('button', {class:'ghost', type:'button', onclick: () => authDialog('login')}, 'Log in'),
+      el('button', {class:'primary', type:'button', onclick: () => authDialog('signup', startCheckout)}, `Subscribe ${ME.price}`));
+  } else {
+    const u = ME.user;
+    box.append(...[el('span', {class:'chip ' + (u.subscribed ? 'clear' : 'minor_concern')}, u.subscribed ? 'Subscribed' : 'Not subscribed'), el('span', {class:'muted'}, u.email),
+      u.credits ? el('span', {class:'chip'}, `${u.credits} analysis credit${u.credits === 1 ? '' : 's'}`) : null,
+      u.subscribed && u.can_manage ? el('button', {class:'ghost', type:'button', onclick: openPortal}, 'Manage billing') : null,
+      u.subscribed ? null : el('button', {class:'primary', type:'button', onclick: startCheckout}, `Subscribe ${ME.price}`),
+      u.subscribed ? null : el('button', {class:'ghost', type:'button', onclick: () => buyCredits(ME.packs[0].qty)}, `Pay per analysis ${ME.per_grade}`),
+      el('button', {class:'ghost', type:'button', onclick: async () => { await api('/api/auth/logout', {method:'POST'}); location.href = '/'; }}, 'Log out')].filter(Boolean));
+  }
+}
+async function startCheckout() {
+  try { const r = await api('/api/billing/checkout', {method:'POST'}); location.href = r.url; }
+  catch (err) { notice('Could not start checkout: ' + err.message); }
+}
+async function buyCredits(qty) {
+  if (!ME.user) { authDialog('signup', () => buyCredits(qty)); return; }
+  try { const r = await api('/api/billing/credits?qty=' + qty, {method:'POST'}); location.href = r.url; }
+  catch (err) { notice('Could not start checkout: ' + err.message); }
+}
+async function openPortal() {
+  try { const r = await api('/api/billing/portal', {method:'POST'}); location.href = r.url; }
+  catch (err) { notice('Could not open billing: ' + err.message); }
+}
+function authDialog(mode, after) {
+  const d = el('dialog'), email = el('input', {type:'email', placeholder:'you@example.com', autocomplete:'email'}), pw = el('input', {type:'password', placeholder:'Password (8+ characters)'}), code = el('input', {type:'text', placeholder:'Admin setup code (administrator only)', class:'hidden'});
+  const err = el('div', {class:'err'});
+  const title = el('h3', {style:'margin-top:0'}), btn = el('button', {class:'primary', type:'submit'}), sw = el('a', {href:'#'});
+  const apply = () => { title.textContent = mode === 'signup' ? 'Create your account' : 'Log in'; btn.textContent = mode === 'signup' ? 'Create account' : 'Log in';
+    sw.textContent = mode === 'signup' ? 'I already have an account' : 'Create an account instead'; pw.autocomplete = mode === 'signup' ? 'new-password' : 'current-password'; };
+  apply(); sw.onclick = e => { e.preventDefault(); mode = mode === 'signup' ? 'login' : 'signup'; apply(); };
+  const form = el('form', {}, title, el('label', {}, 'Email'), email, el('label', {}, 'Password'), pw, code, err, btn, ' ', el('button', {class:'ghost', type:'button', onclick: () => d.close()}, 'Cancel'), el('p', {class:'note'}, sw));
+  form.onsubmit = async e => { e.preventDefault(); err.textContent = ''; btn.disabled = true;
+    try { await api('/api/auth/' + mode, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:email.value, password:pw.value, code:code.value})});
+      d.close(); await refreshMe(); if (after && !(ME.user && ME.user.subscribed)) after(); }
+    catch (x) { err.textContent = x.message; if (/admin setup code/.test(x.message)) code.classList.remove('hidden'); } btn.disabled = false; };
+  d.append(form); d.addEventListener('close', () => d.remove()); document.body.append(d); d.showModal(); email.focus();
+}
+function showPaywall(detail, root) {
+  const d = typeof detail === 'object' && detail ? detail : {code:'', message:String(detail || '')};
+  const head = {free_used:'Your free grade has been used', login_required:'Batch grading is for subscribers', subscription_required:'Subscribe to keep grading cards',
+                cap_reached:'Fair-use limit reached'}[d.code] || 'Subscription required';
+  const loggedIn = ME.user;
+  const packs = ME.packs || [{qty:1, total: ME.per_grade}];
+  const sub = el('div', {class:'pricing'}, el('h3', {style:'margin-top:0'}, 'Monthly subscription'), el('div', {class:'price'}, ME.price ? ME.price.split('/')[0] : '$6.99', el('small', {}, ' / month')),
+    el('ul', {}, ['Grade as many cards as you like', 'Batch grading for up to 100 cards', 'Saved history and PDF reports', 'Cancel any time']
+      .map(t => el('li', {}, t))),
+    loggedIn ? el('button', {class:'primary', type:'button', onclick: startCheckout}, `Subscribe, ${ME.price || '$6.99/month'}`)
+             : el('button', {class:'primary', type:'button', onclick: () => authDialog('signup', startCheckout)}, `Create account and subscribe`));
+  const per = el('div', {class:'pricing', style:'border-color:var(--line)'}, el('h3', {style:'margin-top:0'}, 'Pay per analysis'), el('div', {class:'price'}, ME.per_grade || '', el('small', {}, ' / analysis')),
+    el('p', {class:'note'}, 'No subscription. Buy credits; each analysis uses one. Credits do not expire.'),
+    el('div', {}, packs.map(p => el('button', {class:'ghost', type:'button', style:'margin:0 6px 6px 0', onclick: () => buyCredits(p.qty)}, `${p.qty} ${p.qty === 1 ? 'analysis' : 'analyses'} · ${p.total}`))));
+  const card = el('div', {class:'panel'}, el('h2', {style:'margin-top:0'}, head), el('p', {}, d.message || ''),
+    ME.billing_ready === false ? el('div', {class:'banner'}, 'Payments are not switched on for this site yet (the owner needs to add a Stripe key). The buttons below will show an error until then.') : null,
+    el('div', {class:'grid g2'}, sub, per),
+    loggedIn ? null : el('p', {}, el('button', {class:'ghost', type:'button', onclick: () => authDialog('login')}, 'I already have an account')),
+    el('p', {class:'note'}, 'GradeForge is a pre-grading aid. It cannot guarantee the grade PSA gives, and it has not yet been checked against real PSA results.'));
+  root.replaceChildren(card);
+}
+(async function init() {
+  await refreshMe();
+  if (location.pathname === '/admin') { if (ME.user && ME.user.is_admin) $('#tabs button[data-tab=admin]').click(); else { notice('Log in with the administrator account to see the admin page.'); authDialog('login'); } }
+  const q = new URLSearchParams(location.search);
+  if (q.get('checkout') === 'success' && q.get('session_id')) {
+    history.replaceState({}, '', '/');
+    try { const r = await api('/api/billing/confirm?session_id=' + encodeURIComponent(q.get('session_id')), {method:'POST'});
+      await refreshMe(); notice(r.subscribed ? 'Thank you! Your subscription is active.' : 'Payment received. Activation can take a minute: refresh this page shortly.', r.subscribed ? 'ok' : '');
+    } catch (err) { notice('We could not confirm your checkout yet (' + err.message + '). If you were charged, your access will switch on within a few minutes.'); }
+  } else if (q.get('checkout') === 'cancel') { history.replaceState({}, '', '/'); notice('Checkout cancelled. You have not been charged.'); }
+})();
+
+/* ---------- admin dashboard ---------- */
+async function loadAdmin(days) {
+  const root = $('#adminbox'); days = days || +(root.dataset.days || 30); root.dataset.days = days;
+  root.replaceChildren(el('p', {class:'muted'}, 'Loading…'));
+  let s; try { s = await api(`/api/admin/stats?days=${days}&tz=${new Date().getTimezoneOffset()}`); } catch (err) { root.replaceChildren(el('div', {class:'banner'}, err.message)); return; }
+  const sel = el('select', {style:'width:auto', onchange: e => loadAdmin(+e.target.value)}, [7,14,30,90,365].map(d => el('option', {value:d, selected: d === s.days ? '' : null}, `Last ${d} days`)));
+  const t = s.totals, td = s.daily[s.daily.length - 1] || {};
+  const max = Math.max(1, ...s.daily.map(d => Math.max(d.visitors, d.grades)));
+  const bars = el('div', {style:'display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid var(--line);margin:8px 0'}, s.daily.map(d => el('div', {style:'flex:1;display:flex;gap:1px;align-items:flex-end;height:100%', title:`${d.day}: ${d.visitors} visitors, ${d.grades} cards graded`},
+    el('div', {style:`flex:1;background:var(--unk);height:${d.visitors / max * 100}%`}), el('div', {style:`flex:1;background:var(--accent);height:${d.grades / max * 100}%`}))));
+  const tbl = (head, rows) => el('table', {}, el('tr', {}, head.map(h => el('th', {}, h))), rows.map(r => el('tr', {}, r.map(c => el('td', {}, c ?? '—')))));
+  root.replaceChildren(
+    el('div', {class:'panel'}, el('div', {style:'display:flex;gap:10px;align-items:center;flex-wrap:wrap'}, el('h3', {style:'margin:0'}, 'Site activity'), sel,
+        el('a', {href:`/api/admin/grades.csv?tz=${new Date().getTimezoneOffset()}`}, 'Download all graded cards (CSV)')),
+      el('div', {class:'stats', style:'margin-top:10px'}, statBox('Visitors today', td.visitors), statBox('Cards graded today', td.grades), statBox('Unique visitors, all time', t.unique_visitors),
+        statBox('Cards graded, all time', t.cards_graded), statBox('Accounts', t.accounts), statBox('Active subscribers', t.active_subscribers)),
+      el('p', {class:'note'}, el('span', {style:'color:var(--unk)'}, '■ '), 'unique visitors per day  ', el('span', {style:'color:var(--accent)'}, '■ '), 'cards graded per day'), bars,
+      tbl(['Day','Unique visitors','Cards graded','Free','Subscriber','Pay-per-analysis','Batch','Admin'], [...s.daily].reverse().map(d => [d.day, d.visitors, d.grades, d.free, d.subscriber, d.credit, d.batch, d.admin]))),
+    el('div', {class:'panel'}, el('h3', {}, 'Where grades come from'),
+      el('p', {class:'note'}, 'Source: free = the one free grade, subscriber = a paying account, credit = a pay-per-analysis credit, batch = a zip upload by a subscriber, admin = your own account.'),
+      el('div', {class:'grid g2'}, el('div', {}, el('h4', {}, 'By source'), tbl(['Source','Cards graded'], Object.entries(s.by_source))),
+        el('div', {}, el('h4', {}, 'By country'), tbl(['Country','Cards graded','People'], s.grades_by_country.map(c => [c.country, c.grades, c.people])))),
+      el('h4', {}, 'By referring site'), tbl(['Referrer','Cards graded'], s.by_referrer.map(r => [r.referrer, r.grades])),
+      el('h4', {}, 'Visitors by country'), tbl(['Country','Unique visitors'], s.visitors_by_country.map(c => [c.country, c.visitors]))),
+    el('div', {class:'panel'}, el('h3', {}, 'Cards graded (most recent 200)'),
+      tbl(['When','Card','Who','Source','Country','Verdict','Best possible','Floor','Actual PSA',''],
+        s.recent.map(r => [new Date(r.ts * 1000).toLocaleString(), r.card, r.who, r.source, r.country, pretty(r.verdict), r.best_possible == null ? null : 'PSA ' + r.best_possible,
+          r.floor == null ? null : 'PSA ' + r.floor, r.actual_psa == null ? 'not recorded' : 'PSA ' + r.actual_psa,
+          el('a', {href:`/api/history/${r.analysis_id}/image/front`, target:'_blank'}, 'photo')])),
+      el('p', {class:'note'}, s.notes.join(' '))));
+}
+
+/* ---------- photo upload by category ---------- */
+const CORNERS=[['tl','Top-left corner'],['tr','Top-right corner'],['br','Bottom-right corner'],['bl','Bottom-left corner']];
+const EDGES=[['top','Top edge'],['right','Right edge'],['bottom','Bottom edge'],['left','Left edge']];
+function fileField(name, label, opts={}) {
+  const inp = el('input', {type:'file', name, accept:'image/*'}); if (opts.multiple) inp.multiple = true; if (opts.required) inp.required = true;
+  const tag = el('span', {class:'note'}); inp.addEventListener('change', () => { tag.textContent = inp.files.length ? '✓ ' + [...inp.files].map(f => f.name).join(', ') : ''; });
+  return el('div', {class:'slot'}, el('label', {}, label), inp, tag);
+}
+async function buildSlots() {
+  let g = {}; try { g = await api('/api/photo-guide'); } catch {}
+  const H = g.headers || {}, T = g.howto || {}, W = g.why || {};
+  const root = $('#slots');
+  ['front','back'].forEach(side => {
+    const S = side[0].toUpperCase() + side.slice(1);
+    const sec = el('div', {class:'side'}, el('h3', {}, `${S} of the card`));
+    const card = (id, req, fields, grid) => sec.append(el('div', {class:'cat'},
+      el('h4', {}, H[id] || id, ' ', el('span', {class:'chip'}, req)),
+      el('p', {class:'note'}, el('b', {}, 'Why: '), W[id] || ''),
+      el('p', {class:'note'}, el('b', {}, 'How: '), T[id] || ''),
+      el('div', {class: grid ? 'grid g2' : ''}, fields)));
+    card('overall', side === 'front' ? 'required' : 'needed for a back-side result', [fileField(side, `${S} – ${H.overall || 'Whole card'}`, {required: side === 'front'})]);
+    card('angle', 'recommended', [fileField(side + '_light', `${S} – ${H.angle || 'Angled-light photos'} (2 to 4 photos)`, {multiple:true})]);
+    card('corner', 'recommended', CORNERS.map(([k,n]) => fileField(`shot__${side}__corner_${k}`, `${S} – ${n}`)), true);
+    card('edge', 'optional', EDGES.map(([k,n]) => fileField(`shot__${side}__edge_${k}`, `${S} – ${n}`)), true);
+    card('surface', 'optional', [fileField(`shot__${side}__surface`, `${S} – ${H.surface || 'Surface close-ups'} (up to 4)`, {multiple:true})]);
+    root.append(sec);
+  });
+}
+buildSlots();
+
+/* ---------- plain-English result ---------- */
+function plainPanel(data) {
+  const p = data.plain; if (!p) return el('div');
+  const root = el('div', {class:'panel plain'});
+  root.append(el('div', {class:'big'}, p.headline));
+  if (p.detail) root.append(el('p', {}, p.detail));
+  root.append(el('div', {class:'rangebox'},
+    el('div', {}, el('small', {}, 'Best this card could grade'), el('b', {}, p.best_possible == null ? '—' : 'PSA ' + p.best_possible)),
+    el('div', {}, el('small', {}, 'Confirmed problems'), el('b', {}, String(p.n_confirmed))),
+    el('div', {}, el('small', {}, 'Flags waiting for your check'), el('b', {}, String(p.n_suspected))),
+    p.n_suspected ? el('div', {}, el('small', {}, 'Floor if every flag were real'), el('b', {}, 'PSA ' + p.if_all_flags_real)) : null));
+  root.append(el('p', {}, p.grade_line));
+  if (p.looks_good.length) root.append(el('h3', {}, 'What looks good'), el('ul', {}, p.looks_good.map(x => el('li', {}, el('b', {}, x.area + ': '), x.text))));
+  if (p.worries.length) root.append(el('h3', {}, 'What may hold it back'), el('ul', {}, p.worries.map(x => el('li', {}, el('b', {}, x.area + ': '), x.text))));
+  if (p.flagged.length) root.append(el('h3', {}, 'Flagged items'), el('ul', {}, p.flagged.map(f => el('li', {}, el('b', {}, f.where + ': '), f.what + '. ', el('span', {class:'muted'}, f.how_sure)))));
+  if (p.next_steps.length) root.append(el('h3', {}, 'What to do next'), el('ol', {}, p.next_steps.map(st => el('li', {},
+    el('b', {}, st.title), st.where_to_upload.length ? el('div', {class:'note'}, '📷 Upload under: ' + st.where_to_upload.join(' or ')) : null, el('div', {class:'note'}, st.how)))));
+  root.append(el('p', {class:'note'}, p.how_to_read));
+  return root;
+}
+
+/* ---------- photo inventory ---------- */
+function photosPanel(data) {
+  const inv = data.photos; if (!inv) return el('div');
+  const root = el('div', {class:'panel'}, el('h3', {}, 'Your photos, by category'),
+    el('p', {class:'note'}, `${inv.totals.uploaded} uploaded: ${inv.totals.used} used, ${inv.totals.not_used} not used. To add or replace photos, upload them under the header shown and press Analyze again.`));
+  const icon = {provided:'✅', partial:'🟡', problem:'⚠️', missing:'⬜', optional:'➖'};
+  ['front','back'].forEach(side => {
+    const cats = inv.sides[side]; if (!cats) return;
+    root.append(el('h4', {}, side[0].toUpperCase() + side.slice(1)));
+    cats.forEach(c => root.append(el('details', {open: c.status === 'problem' || c.status === 'missing' || c.status === 'partial'},
+      el('summary', {}, `${icon[c.status] || ''} ${c.header} – ${c.status}`),
+      el('ul', {}, c.items.map(i => el('li', {}, el('b', {}, (i.label ? i.label + ': ' : '')), i.name ? `${i.name} – ` : '', i.note))),
+      c.missing.length ? el('div', {class:'note'}, 'Still needed: ' + c.missing.join('; ')) : null)));
+  });
+  return root;
+}
+
+function renderResult(root, data) {
+  root.replaceChildren();
+  const ap = el('div'); root.append(ap);
+  const refreshAssessment = () => ap.replaceChildren(plainPanel(data), photosPanel(data),
+    el('details', {class:'panel'}, el('summary', {}, 'Technical details (for experts)'), gemPanel(data), assessmentPanel(data)));
+  refreshAssessment();
+
+  const actions = el('div', {class:'panel'});
+  actions.append(el('a', {href:`/api/history/${data.id}/report.pdf`}, el('button', {class:'ghost', type:'button'}, 'Download PDF report')), ' ');
+  const sel = el('select', {style:'width:auto'}, [...Array(10)].map((_,k) => el('option', {value:10-k}, 'PSA ' + (10-k))));
+  const qual = el('select', {style:'width:auto'}, ['', 'OC','MK','ST','PD','OF','MC'].map(q => el('option', {value:q}, q || 'no qualifier')));
+  const pre = el('input', {type:'checkbox'}); pre.checked = true;
+  const exc = el('input', {type:'checkbox'}), why = el('input', {type:'text', placeholder:'reason (e.g. re-holdered)', style:'width:200px'});
+  const when = el('input', {type:'date', style:'width:auto'});
+  const saved = el('span', {class:'muted'});
+  actions.append(el('details', {}, el('summary', {}, 'Record the actual PSA result (feeds the evaluation and training data)'),
+    el('p', {class:'note'}, 'Record the result only for a card you photographed BEFORE submitting. Review findings before you know the grade; reviewing after the result is flagged in the audit log.'),
+    el('div', {style:'display:flex;gap:8px;flex-wrap:wrap;align-items:center'}, 'Grade:', sel, qual, 'Submitted:', when,
+      el('label', {style:'display:inline-flex;gap:4px;align-items:center;margin:0'}, pre, 'photos were taken before submission'),
+      el('label', {style:'display:inline-flex;gap:4px;align-items:center;margin:0'}, exc, 'exclude from evaluation'), why,
+      el('button', {class:'ghost', type:'button', onclick: async () => {
+        try { const r = await api(`/api/history/${data.id}/outcome`, {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({psa_grade:+sel.value, qualifier:qual.value||null, pre_submission_photos:pre.checked, submitted_on:when.value||null, excluded:exc.checked, exclude_reason:why.value})});
+          saved.textContent = r.counts_for_training ? ' saved (counts toward evaluation)' : ' saved (will NOT count toward evaluation)'; }
+        catch (err) { saved.textContent = ' ' + err.message; } }}, 'Save'), saved)));
+  root.append(actions);
+
+  const sides = ['front','back'].filter(s => data[s] && data[s].ok);
+  if (sides.length) root.append(viewerPanel(data, sides, refreshAssessment));
+  ['front','back'].forEach(s => { if (data[s] && !data[s].ok) root.append(el('div', {class:'banner'}, `${s}: ${data[s].reason}`)); });
+  sides.forEach(s => root.append(sideDetails(data[s])));
+}
+
+function sideDetails(s) {
+  const d = el('details', {open:''}, el('summary', {}, `${s.side} details`));
+  const c = s.centering;
+  d.append(c.measurable ? el('p', {}, `Centering — left/right ${c.lr_split.join('/')}, top/bottom ${c.tb_split.join('/')}; worst axis ${c.worst_axis} at ${c.worst_pct}% (±${c.uncertainty_pct}).`)
+                        : el('p', {}, 'Centering not measurable: ' + c.reason));
+  if (s.quality.issues.length) d.append(el('ul', {}, s.quality.issues.map(i => el('li', {}, i))));
+  // completeness
+  const comp = s.completeness;
+  d.append(el('h4', {}, `Inspection completeness: ${comp.level}`), el('p', {class:'note'}, comp.note));
+  const ct = el('table', {}, el('tr', {}, el('th',{},'Region'), el('th',{},'Inspectable'), el('th',{},'Why / what to add')));
+  comp.rois.forEach(r => ct.append(el('tr', {}, el('td',{}, r.label),
+    el('td',{}, chip(r.inspectable==='yes'?'pass_observed':r.inspectable==='partial'?'borderline':'unknown_not_assessed'), ' ', r.inspectable),
+    el('td',{}, [...r.reasons, ...r.requests].join(' ') || '—'))));
+  d.append(ct);
+  // registration + resolution
+  const reg = s.registration;
+  d.append(el('h4', {}, 'Photo registration'));
+  const rl = [];
+  reg.lighting.forEach(r => rl.push(el('li', {}, `${r.role}: ` + (r.ok ? `aligned (correlation ${r.cc}, residual ${r.residual_shift_px} px)` : `not used — ${r.reason}`))));
+  reg.macros.forEach(m => rl.push(el('li', {}, `macro ${m.index+1} (${m.name}): ` + (m.registered ? `placed on the card, about ${m.macro_px_per_mm} px/mm` : `not placed — ${m.reason || 'no match'}`))));
+  if (reg.lighting_stack.images > 1) rl.push(el('li', {}, `Lighting variety: difference-to-noise ${reg.lighting_stack.diversity_ratio} (${reg.lighting_stack.diversity_ok ? 'enough' : 'too small to separate relief from artwork'}).`));
+  d.append(rl.length ? el('ul', {}, rl) : el('p', {class:'muted'}, 'Single photo: no registration performed.'));
+  d.append(el('p', {class:'note'}, s.resolution.note + ` Source resolution about ${s.detection.source_px_per_mm} px/mm.`));
+  d.append(el('p', {class:'note'}, s.surface.artwork_note), el('p', {class:'note'}, s.detector_note));
+  return el('div', {class:'panel'}, d);
+}
+
+const CLS_GROUP = c => c.startsWith('physical') || c==='manual_observation' || c==='geometry_measurement' ? 'physical' : c.startsWith('indeterminate') ? 'indeterminate' : 'artifact';
+const CLS_LABEL = {physical:'physical-probable / measured', indeterminate:'indeterminate', artifact:'artifact'};
+
+function viewerPanel(data, sides, onAssessment) {
+  const root = el('div', {class:'panel'}, el('h3', {}, 'Defect map'),
+    el('p', {class:'note'}, 'Every marker is a candidate until you confirm it. Click a marker or list row to see the original-photo crops behind it. Drag to pan, scroll or pinch to zoom, double-click to reset.'));
+  const sideSel = el('select', {style:'width:auto'}, sides.map(s => el('option', {value:s}, s)));
+  const flt = {physical:true, indeterminate:true, artifact:false, rejected:false, centering:false};
+  const toggles = el('div', {class:'toggles'}, sideSel,
+    ['physical','indeterminate','artifact','rejected','centering'].map(k => { const cb = el('input', {type:'checkbox'}); cb.checked = flt[k];
+      cb.onchange = () => { flt[k]=cb.checked; draw(); renderList(); }; return el('label', {}, cb, k==='rejected'?'rejected':k==='centering'?'centering lines':CLS_LABEL[k]); }));
+  const markBtn = el('button', {class:'ghost', type:'button'}, 'Mark a region I can see…');
+  toggles.append(markBtn);
+  const wrap = el('div', {class:'viewer'}); const cv = el('canvas'); wrap.append(cv);
+  const list = el('div', {class:'flist'}); const detail = el('div', {});
+  root.append(toggles, el('div', {class:'split'}, el('div', {}, wrap, el('p',{class:'note'}, 'Green = confirmed by a reviewer. Red/orange = physical-probable or measured. Yellow = indeterminate. Grey dashed = artifact (e.g. glare).')), el('div', {}, list, detail)));
+  let img = new Image(), view = {s:1, x:0, y:0}, selected = null, markMode = false, drag = null;
+  const side = () => sideSel.value, S = () => data[side()], F = () => S().findings;
+  const visible = f => f.status==='rejected' ? flt.rejected : flt[CLS_GROUP(f.classification)] || f.status==='confirmed';
+  const colorOf = f => f.status==='confirmed' ? '#3cb371' : f.status==='rejected' ? '#8794a6' : ({physical: f.severity==='moderate'?'#d9473f':'#f08a2b', indeterminate:'#e6c21e', artifact:'#8794a6'})[CLS_GROUP(f.classification)];
+
+  function fit() { const r = wrap.getBoundingClientRect(); cv.width = r.width*devicePixelRatio; cv.height = r.height*devicePixelRatio;
+    view.s = Math.min(cv.width/img.width, cv.height/img.height); view.x = (cv.width-img.width*view.s)/2; view.y = (cv.height-img.height*view.s)/2; draw(); }
+  function draw() { const g = cv.getContext('2d'); g.setTransform(1,0,0,1,0,0); g.clearRect(0,0,cv.width,cv.height);
+    if (!img.complete || !img.naturalWidth) return;
+    g.setTransform(view.s,0,0,view.s,view.x,view.y); g.drawImage(img,0,0); g.lineWidth = 2/view.s; g.font = `${12/view.s}px sans-serif`;
+    if (flt.centering) S().overlays.filter(o => o.kind==='line').forEach(o => { g.strokeStyle='#ffd24c'; g.beginPath(); g.moveTo(o.x1,o.y1); g.lineTo(o.x2,o.y2); g.stroke(); });
+    F().filter(visible).forEach(f => { const [x,y,w,h] = f.box; if (w >= img.width*0.9 && h >= img.height*0.9) return;
+      g.strokeStyle = colorOf(f); g.setLineDash(CLS_GROUP(f.classification)==='artifact' || f.status==='rejected' ? [6/view.s,4/view.s] : []);
+      g.lineWidth = (f.id===selected ? 4 : f.status==='confirmed' ? 3 : 2)/view.s; g.strokeRect(x,y,w,h); g.setLineDash([]);
+      g.fillStyle = g.strokeStyle; g.fillText(f.id, x+2/view.s, y-3/view.s); });
+    if (drag) { g.strokeStyle='#4cc2ff'; g.setLineDash([5/view.s,4/view.s]); g.strokeRect(drag.x0, drag.y0, drag.x1-drag.x0, drag.y1-drag.y0); g.setLineDash([]); } }
+  const toImg = e => { const r = cv.getBoundingClientRect(); return {x:((e.clientX-r.left)*devicePixelRatio-view.x)/view.s, y:((e.clientY-r.top)*devicePixelRatio-view.y)/view.s}; };
+
+  function renderList() {
+    list.replaceChildren();
+    const rows = F().filter(visible);
+    if (!rows.length) list.append(el('div', {class:'frow muted'}, 'No findings in the selected groups.'));
+    rows.forEach(f => list.append(el('div', {class:'frow'+(f.id===selected?' sel':''), onclick:() => select(f.id)},
+      el('span',{class:'id'}, f.id), el('span',{}, f.label), el('span',{class:'chip '+(f.status==='confirmed'?'confirmed':CLS_GROUP(f.classification))}, f.status==='confirmed'?'confirmed':f.status==='rejected'?'rejected':pretty(f.classification)))));
+  }
+  function select(id) { selected = id; draw(); renderList(); renderDetail(); }
+
+  function renderDetail() {
+    detail.replaceChildren();
+    const f = F().find(x => x.id===selected); if (!f) { detail.append(el('p',{class:'muted'}, 'Select a finding to see its evidence.')); return; }
+    const d = el('div', {class:'panel', style:'margin-top:10px'});
+    d.append(el('h4',{style:'margin:0 0 4px'}, `${f.id} — ${f.label}`), el('p',{style:'margin:0 0 6px'}, f.summary),
+      el('p',{class:'note'}, `Target: ${pretty(f.target)} · severity ${f.severity} · `, el('b',{}, f.classification_text)));
+    if (f.classification_reasons.length) d.append(el('ul',{class:'note'}, f.classification_reasons.map(r => el('li',{}, r))));
+    const m = Object.entries(f.measurements).filter(([k]) => k!=='strength');
+    if (m.length) d.append(el('p',{class:'note'}, m.map(([k,v]) => `${pretty(k)}: ${v}`).join(' · ')));
+    if (f.resolvability && f.resolvability.feature_width_mm != null) d.append(el('p',{class:'note'}, `Feature width ≈ ${f.resolvability.feature_width_mm} mm (${f.resolvability.feature_width_source_px} source px; photo resolves ≥ ${f.resolvability.min_resolvable_width_mm} mm).` + (f.resolvability.at_resolution_limit ? ' AT THE RESOLUTION LIMIT: cannot be characterized.' : '')));
+    if (f.support.per_image) d.append(el('p',{class:'note'}, 'Per photo: ' + f.support.per_image.map(p => `${p.role} ${p.valid ? (p.present ? 'present' : 'absent') : 'unusable here'}`).join(', ')));
+    d.append(el('p',{class:'note'}, `Detector ${f.detector.id} v${f.detector.version}: ${f.detector.type.replace('_',' ')}, trained=${f.detector.trained}, validated=${f.detector.validated}.`));
+    // evidence crops
+    const boxes = {};
+    const files = f.evidence.files || {};
+    const gal = el('div', {class:'crops'});
+    Object.entries(files).forEach(([k, rec]) => { const cb = el('input', {type:'checkbox'}); boxes[k] = cb;
+      const url = `/api/history/${data.id}/evidence/${rec.file}`;
+      gal.append(el('div', {class:'crop'}, el('a',{href:url, target:'_blank'}, el('img', {src:url, alt:rec.label, loading:'lazy'})),
+        el('div', {}, rec.label, el('div',{class:'muted'}, `${rec.px[0]}×${rec.px[1]} · sha256 ${rec.sha256.slice(0,10)}…`)), el('label', {}, cb, 'cite as evidence')));
+    });
+    d.append(el('h4',{style:'margin:8px 0 4px'}, 'Evidence'), Object.keys(files).length ? gal : el('p',{class:'muted'},'No crops stored.'));
+    // review
+    if (f.review) d.append(el('p',{class:'note'}, `Review: ${f.review.action} by ${f.review.reviewer}${f.review.note ? ' — ' + f.review.note : ''}. Cited: ${(f.review.evidence_keys||[]).join(', ') || '—'}.`));
+    if (f.category !== 'glare_region') {
+      const who = el('input', {type:'text', placeholder:'Reviewer name', maxlength:'80'}), note = el('textarea', {rows:'2', placeholder:'What you see in the crops (required to reject)'});
+      const sev = el('select', {}, ['minor','moderate','info'].map(x => el('option', {value:x}, x))); sev.value = f.severity;
+      const msg = el('span', {class:'muted'});
+      const send = async action => { try {
+          const r = await api(`/api/history/${data.id}/${side()}/findings/${f.id}/review`, {method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({action, reviewer:who.value, note:note.value, severity: action==='confirm' ? sev.value : null, evidence_keys:Object.entries(boxes).filter(([,c]) => c.checked).map(([k]) => k)})});
+          data[side()].findings = r.findings; data.assessment = r.assessment; data.gem = r.gem; if (r.plain) data.plain = r.plain; onAssessment(); draw(); renderList(); renderDetail();
+        } catch (err) { msg.textContent = err.message; } };
+      d.append(el('h4',{style:'margin:8px 0 4px'}, 'Your review'), who, note,
+        el('div',{style:'display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;align-items:center'}, 'Severity if confirmed:', sev,
+          el('button',{class:'ghost',type:'button',onclick:() => send('confirm')}, 'Confirm defect'),
+          el('button',{class:'ghost',type:'button',onclick:() => send('reject')}, 'Reject'),
+          el('button',{class:'ghost',type:'button',onclick:() => send('reset')}, 'Reset'), msg),
+        el('p',{class:'note'}, 'Confirming needs at least one cited crop. Confirmed findings lower the ceilings; rejected ones are kept for the record but ignored.'));
+    }
+    detail.append(d);
+  }
+
+  function load() { img = new Image(); img.onload = fit; img.src = `/api/history/${data.id}/image/${side()}`; selected = null; renderList(); renderDetail(); }
+  sideSel.onchange = load;
+
+  // manual region marking
+  markBtn.onclick = () => { markMode = !markMode; markBtn.textContent = markMode ? 'Drag a box on the card… (click to cancel)' : 'Mark a region I can see…'; cv.style.cursor = markMode ? 'crosshair' : 'grab'; };
+  function manualForm(box) {
+    const target = el('select', {}, [['corner_tl','Top-left corner'],['corner_tr','Top-right corner'],['corner_br','Bottom-right corner'],['corner_bl','Bottom-left corner'],['edge_top','Top edge'],['edge_right','Right edge'],['edge_bottom','Bottom edge'],['edge_left','Left edge'],['ring_border','Border surface'],['artwork','Artwork'],['other','Other']].map(([v,t]) => el('option',{value:v},t)));
+    const sev = el('select', {}, ['minor','moderate','info'].map(x => el('option',{value:x},x))), note = el('textarea',{rows:'2',placeholder:'Describe what you see in the original photo'}), who = el('input',{type:'text',placeholder:'Reviewer name',maxlength:'80'}), msg = el('span',{class:'muted'});
+    detail.replaceChildren(el('div',{class:'panel',style:'margin-top:10px'}, el('h4',{style:'margin:0 0 6px'}, 'New manual observation'),
+      el('p',{class:'note'}, `Box ${box.map(Math.round).join(', ')} (canvas px). Evidence crops are cut from the stored original photo.`), target, sev, who, note,
+      el('button',{class:'ghost',type:'button',onclick: async () => { try {
+        const r = await api(`/api/history/${data.id}/${side()}/findings`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({box, target:target.value, severity:sev.value, note:note.value, reviewer:who.value})});
+        data[side()].findings = r.findings; data.assessment = r.assessment; data.gem = r.gem; if (r.plain) data.plain = r.plain; onAssessment(); const nf = r.findings.filter(x => x.category==='manual').pop(); select(nf.id);
+      } catch (err) { msg.textContent = err.message; } }}, 'Add observation'), ' ', msg));
+  }
+
+  cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), mx=(e.clientX-r.left)*devicePixelRatio, my=(e.clientY-r.top)*devicePixelRatio;
+    const k = Math.exp(-e.deltaY*0.0015); view.x = mx-(mx-view.x)*k; view.y = my-(my-view.y)*k; view.s *= k; draw(); }, {passive:false});
+  const ptrs = new Map(); let last = 0, moved = false;
+  cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, e); last = 0; moved = false;
+    if (markMode && ptrs.size === 1) { const p = toImg(e); drag = {x0:p.x, y0:p.y, x1:p.x, y1:p.y}; } });
+  cv.addEventListener('pointerup', e => { ptrs.delete(e.pointerId);
+    if (drag) { const b = [Math.min(drag.x0,drag.x1), Math.min(drag.y0,drag.y1), Math.abs(drag.x1-drag.x0), Math.abs(drag.y1-drag.y0)]; drag = null; markMode = false; markBtn.textContent = 'Mark a region I can see…'; cv.style.cursor='grab'; draw();
+      if (b[2] > 4 && b[3] > 4) manualForm(b); return; }
+    if (!moved) { const p = toImg(e); const hit = F().filter(visible).filter(f => p.x>=f.box[0] && p.x<=f.box[0]+f.box[2] && p.y>=f.box[1] && p.y<=f.box[1]+f.box[3] && !(f.box[2] >= img.width*0.9 && f.box[3] >= img.height*0.9))
+        .sort((a,b) => a.box[2]*a.box[3] - b.box[2]*b.box[3])[0]; if (hit) select(hit.id); } });
+  cv.addEventListener('pointercancel', e => ptrs.delete(e.pointerId));
+  cv.addEventListener('pointermove', e => { const p = ptrs.get(e.pointerId); if (!p) return; moved = true;
+    if (drag) { const q = toImg(e); drag.x1 = q.x; drag.y1 = q.y; draw(); return; }
+    if (ptrs.size === 1) { view.x += (e.clientX-p.clientX)*devicePixelRatio; view.y += (e.clientY-p.clientY)*devicePixelRatio; ptrs.set(e.pointerId, e); draw(); }
+    else if (ptrs.size === 2) { ptrs.set(e.pointerId, e); const [a,b] = [...ptrs.values()]; const d = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+      if (last) { const k = d/last, r = cv.getBoundingClientRect(), mx=((a.clientX+b.clientX)/2-r.left)*devicePixelRatio, my=((a.clientY+b.clientY)/2-r.top)*devicePixelRatio;
+        view.x = mx-(mx-view.x)*k; view.y = my-(my-view.y)*k; view.s *= k; draw(); } last = d; } });
+  cv.addEventListener('dblclick', fit); addEventListener('resize', fit);
+  setTimeout(load, 0);
+  return root;
+}
+
+$('#bform').addEventListener('submit', async e => {
+  e.preventDefault(); const st = $('#bstatus'); st.textContent = 'Analyzing batch…';
+  try {
+    const data = await api('/api/batch', {method:'POST', body:new FormData(e.target)}); st.textContent = '';
+    const t = el('table', {}, el('tr', {}, ['Card','Status','Conservative','Optimistic','PSA 10','Report'].map(h => el('th',{},h))));
+    data.results.forEach(r => t.append(el('tr',{}, el('td',{}, r.card), el('td',{}, pretty(r.status) + (r.reasons.length ? ': ' + r.reasons[0] : '')), el('td',{}, r.conservative ?? '—'), el('td',{}, r.optimistic ?? '—'), el('td',{}, pretty(r.psa10)), el('td',{}, el('a',{href:`/api/history/${r.id}/report.pdf`}, 'PDF')))));
+    $('#bresult').replaceChildren(el('div',{class:'panel'}, el('p',{}, `${data.count} cards analyzed (saved to History).`), t));
+  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#bresult')); } else st.textContent = 'Error: ' + err.message; }
+});
+
+async function loadHistory() {
+  const root = $('#hist'); root.replaceChildren(el('p',{class:'muted'},'Loading…'));
+  const [h, cmp0] = await Promise.all([api('/api/history'), api('/api/comparison').catch(() => null)]);
+  const cmp = cmp0 || {n_scored: 0, message: 'Accuracy comparison is available to the site administrator only.'};
+  root.replaceChildren();
+  const m = el('div', {class:'panel'}, el('h3',{}, 'Comparison against actual PSA outcomes'));
+  if (!cmp.n_scored) m.append(el('p',{class:'muted'}, cmp.message || (cmp.n_total ? 'No scored cards with recorded outcomes yet.' : 'No recorded PSA outcomes yet. Record the real grade on an analysis to build this comparison.')));
+  else m.append(el('table',{}, Object.entries(cmp).filter(([k]) => k!=='message').map(([k,v]) => el('tr',{}, el('td',{}, pretty(k)), el('td',{}, v==null?'n/a':String(v))))));
+  root.append(m);
+  const t = el('table',{}, el('tr',{}, ['Date','Card','Status','Gem Mint','Cons.','Opt.','Actual PSA',''].map(x => el('th',{},x))));
+  h.items.forEach(i => t.append(el('tr',{}, el('td',{}, new Date(i.created*1000).toLocaleString()), el('td',{}, i.label || i.id), el('td',{}, pretty(i.status)), el('td',{}, pretty(i.gem_verdict)), el('td',{}, i.conservative ?? '—'), el('td',{}, i.optimistic ?? '—'), el('td',{}, i.actual_psa_grade ?? '—'),
+    el('td',{}, el('a',{href:`/api/history/${i.id}/report.pdf`}, 'PDF')))));
+  root.append(el('div',{class:'panel'}, h.items.length ? t : el('p',{class:'muted'}, 'No analyses yet.')));
+}
+
+async function loadReliability() {
+  const root = $('#rel'); root.replaceChildren(el('p', {class:'muted'}, 'Loading…'));
+  const r = await api('/api/gem/reliability'); root.replaceChildren();
+  const p = el('div', {class:'panel'}, el('h3', {}, 'How well do the predictions match real PSA grades?'),
+    el('p', {}, `Outcomes recorded: ${r.n_outcomes_total ?? 0}. Eligible for evaluation (frozen features, photos taken before submission, not excluded): ${r.n_eligible}.`));
+  if (Object.keys(r.excluded_reasons || {}).length) p.append(el('ul', {class:'note'}, Object.entries(r.excluded_reasons).map(([k,v]) => el('li', {}, `${v} excluded: ${k}`))));
+  const rp = r.rules_performance;
+  if (!rp.n) p.append(el('p', {class:'muted'}, rp.message));
+  else {
+    const t = el('table', {}, el('tr', {}, ['Rules verdict','Cards','PSA 10','Rate (95% CI)','Grades received'].map(x => el('th', {}, x))));
+    Object.entries(rp.by_verdict).forEach(([v, d]) => t.append(el('tr', {}, el('td', {}, pretty(v)), el('td', {}, d.n), el('td', {}, d.n_psa10), el('td', {}, `${(d.psa10_rate*100).toFixed(0)}% (${(d.psa10_rate_ci95[0]*100).toFixed(0)}–${(d.psa10_rate_ci95[1]*100).toFixed(0)}%)`), el('td', {}, Object.entries(d.grades).map(([g,c]) => `${g}: ${c}`).join(', ')))));
+    p.append(el('h4', {}, 'Rules-based verdicts vs outcomes'), t, el('p', {class:'note'}, rp.warning));
+    if (rp.not_ruled_out) p.append(el('p', {}, `Treating "credible or uncertain" as the PSA 10 shortlist: precision ${rp.not_ruled_out.precision ?? 'n/a'}, recall ${rp.not_ruled_out.recall ?? 'n/a'}, PSA 10s wrongly excluded: ${rp.not_ruled_out.false_exclusions}.`));
+  }
+  p.append(el('h4', {}, 'Trained model'), el('p', {}, r.training_gate.message), el('p', {class:'note'}, r.rules_validation_note));
+  if (r.model) { const m = r.model.cv_metrics; p.append(el('p', {}, `Last trained model: ${r.model.validated ? 'PASSED' : 'did NOT pass'} the validation criteria. Cross-validated AUC ${m.auc} (95% CI ${m.auc_ci95.join('–')}), Brier ${m.brier} vs base-rate ${m.baseline_brier}, calibration slope ${m.calibration_slope}.`), el('p', {class:'note'}, r.model.caveat)); }
+  const msg = el('span', {class:'muted'});
+  p.append(el('button', {class:'ghost', type:'button', onclick: async () => { msg.textContent = 'Training…'; try { const t = await api('/api/gem/model/train', {method:'POST'}); msg.textContent = t.trained ? (t.validated ? ' Trained and validated.' : ' Trained but NOT validated: predictions stay disabled.') : ' ' + t.reason; if (t.trained) loadReliability(); } catch (err) { msg.textContent = err.message; } }}, 'Train model from recorded outcomes'), ' ', msg, ' ',
+    el('a', {href:'/api/gem/training.csv'}, 'Download training rows (CSV)'));
+  root.append(p);
+}
+
+async function loadStandards() {
+  const root = $('#stds'); const d = await api('/api/standards'); root.replaceChildren();
+  const p = el('div',{class:'panel'}, el('h3',{}, `PSA criteria database v${d.meta.database_version} (compiled ${d.meta.compiled_on})`),
+    el('div',{class:'banner'}, d.meta.verification_note), el('p',{class:'note'}, d.leeway_note),
+    el('ul',{}, d.meta.known_conflicts.map(c => el('li',{}, c))),
+    el('h4',{}, 'Items read from the official PSA page (' + (d.meta.official_verified_on || 'n/a') + ')'), el('ul',{}, (d.meta.official_items||[]).map(i => el('li',{}, i.text))));
+  const t = el('table',{}, el('tr',{}, ['Grade','Name','Front centering','Back centering','Source status'].map(x => el('th',{},x))));
+  Object.entries(d.grades).sort((a,b)=>b[0]-a[0]).forEach(([g,v]) => t.append(el('tr',{}, el('td',{},g), el('td',{}, v.name), el('td',{}, v.front_max_pct==null?'unverified':`${v.front_max_pct}/${100-v.front_max_pct}`), el('td',{}, v.back_max_pct==null?'unverified':`${v.back_max_pct}/${100-v.back_max_pct}`), el('td',{}, pretty(v.centering_status)))));
+  p.append(t); root.append(p);
+}
+</script>
+<script src="/static/dataset.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+GRADEFORGE - HOW TO START (no typing needed)
+============================================
+
+1. Unzip the file you downloaded. (Right-click > Extract All on Windows; double-click on Mac.)
+   Do not run it from inside the zip: extract it to a normal folder such as Documents.
+
+2. Open the "gradeforge" folder and double-click:
+      Windows:  start_windows.bat
+      Mac:      start_mac.command
+
+   WINDOWS: if Windows says "protected your PC", click "More info" then "Run anyway".
+   MAC:     if it says it can't be opened, right-click the file, choose Open, then Open again.
+            If it says permission denied, open Terminal once and run:  chmod +x start_mac.command
+
+3. A black window opens and installs what it needs. The first time this takes a few minutes.
+   If Python is missing it will tell you exactly what to install (tick "Add python.exe to PATH").
+
+4. Your browser opens GradeForge at http://localhost:8000. Keep the black window open while you use it.
+   To stop: close the black window. To start again later: double-click the same file (it starts in seconds).
+
+YOUR DATA
+   Photos, cards and results are saved in the "data" folder next to these files. Back it up if the records matter.
+   Everything runs on your own computer; nothing is uploaded anywhere.
+
+USING IT
+   Analyze tab ........ upload front/back photos of a card (add a few extra photos with the light coming from different directions).
+   Dataset & validation  register each card, link its photos as "pre-grading", then record PSA's grade and cert number after grading.
+   Full instructions are in README.md.
+
+IF SOMETHING GOES WRONG
+   Take a screenshot of the black window and send it to Claude.
+   "Address already in use" means GradeForge is already running: just open http://localhost:8000

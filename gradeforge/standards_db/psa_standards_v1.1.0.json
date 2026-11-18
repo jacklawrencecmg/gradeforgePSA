@@ -1,0 +1,149 @@
+{
+ "database_version": "1.1.0",
+ "compiled_on": "2026-11-03",
+ "official_source": "https://www.psacard.com/gradingstandards",
+ "official_page_verified": false,
+ "verification_note": "PARTIALLY verified. On 2026-11-03 the official page https://www.psacard.com/gradingstandards was read through an automated fetch that returns a summary of the page; the items listed under official_items match that reading. The page has no grade-by-grade table, so every other numeric value (PSA 9 reverse limit, centering for grades 8 and below, the 'one minor flaw' wording for PSA 9) still comes from secondary sources. Compare against the page yourself before relying on any value.",
+ "centering_measure": "Larger border share on the worse axis, in percent (60 means 60/40).",
+ "front_leeway_pct": 5,
+ "leeway_applies_to_grades_at_or_above": 7,
+ "leeway_note": "Secondary sources report that PSA allows a 5 percent leeway on front centering for cards grading 7 or better, and may permit a small variance based on overall eye appeal. GradeForge uses the leeway only for its optimistic ceiling, never for the conservative one.",
+ "known_conflicts": [
+  "The official page gives the PSA 10 front limit as a range, 'approximately 55/45 to 60/40'. Secondary sources usually say 55/45. GradeForge treats 55/45 as the nominal limit and 55-60 as a grader-discretion band.",
+  "Some sources call 60/40 the PSA 10 front limit (older guidance). Under the official wording it is the outer end of the discretion band, not a safe pass.",
+  "Isolated sources list different values for PSA 6, 7 and 8 (for example 75/25, 80/20, 95/5). The values below are the ones most sources agree on."
+ ],
+ "grades": {
+  "10": {
+   "name": "Gem Mint",
+   "front_max_pct": 55,
+   "back_max_pct": 75,
+   "centering_status": "official_quoted_range",
+   "summary": "Virtually perfect card: four sharp corners, sharp focus, full original gloss, no staining.",
+   "front_discretion_max_pct": 60
+  },
+  "9": {
+   "name": "Mint",
+   "front_max_pct": 60,
+   "back_max_pct": 90,
+   "centering_status": "official_quoted_front_secondary_back",
+   "summary": "Superb card that tolerates one minor flaw, such as a slight wax stain on the back, a minor print imperfection, or slightly off-white borders.",
+   "front_eye_appeal_max_pct": 65
+  },
+  "8": {
+   "name": "Near Mint-Mint",
+   "front_max_pct": 65,
+   "back_max_pct": 90,
+   "centering_status": "secondary_corroborated",
+   "summary": "Looks like a 9 at first glance; may show slight fraying at one or two corners, a minor print flaw, or slight staining."
+  },
+  "7": {
+   "name": "Near Mint",
+   "front_max_pct": 70,
+   "back_max_pct": 90,
+   "centering_status": "secondary_corroborated",
+   "summary": "Slight surface wear and slight corner fraying visible."
+  },
+  "6": {
+   "name": "Excellent-Mint",
+   "front_max_pct": 80,
+   "back_max_pct": 90,
+   "centering_status": "secondary_corroborated",
+   "summary": "Visible surface wear or a print defect that does not detract from overall appeal."
+  },
+  "5": {
+   "name": "Excellent",
+   "front_max_pct": 85,
+   "back_max_pct": 90,
+   "centering_status": "secondary_single_source",
+   "summary": "Minor corner rounding is evident; surface wear and print defects are more visible; borders may look off-white."
+  },
+  "4": {
+   "name": "Very Good-Excellent",
+   "front_max_pct": null,
+   "back_max_pct": null,
+   "centering_status": "unverified",
+   "summary": "Slightly rounded corners; surface wear is noticeable but modest."
+  },
+  "3": {
+   "name": "Very Good",
+   "front_max_pct": 90,
+   "back_max_pct": 90,
+   "centering_status": "secondary_single_source",
+   "summary": "Corner rounding is evident but not extreme; wear is apparent, possibly with light scuffing or scratches."
+  },
+  "2": {
+   "name": "Good",
+   "front_max_pct": 90,
+   "back_max_pct": 90,
+   "centering_status": "secondary_single_source",
+   "summary": "Accelerated corner rounding; surface wear is obvious."
+  },
+  "1": {
+   "name": "Poor",
+   "front_max_pct": 90,
+   "back_max_pct": 90,
+   "centering_status": "secondary_single_source",
+   "summary": "Card is complete but heavily worn."
+  }
+ },
+ "qualifiers_not_modeled": [
+  "OC (off-center)",
+  "MK (marks)",
+  "ST (stain)",
+  "PD (print defect)",
+  "OF (out of focus)",
+  "MC (miscut)"
+ ],
+ "not_modeled_note": "GradeForge does not predict qualifiers (it records them as feedback) and does not model PSA's authentication or alteration checks.",
+ "official_page_partially_verified": true,
+ "official_verified_on": "2026-11-03",
+ "official_items": [
+  {
+   "id": "psa10_definition",
+   "text": "A PSA 10 card is a virtually perfect card. Attributes include four perfectly sharp corners, sharp focus and full original gloss.",
+   "quoted": true
+  },
+  {
+   "id": "psa10_surface",
+   "text": "A PSA 10 card must be free of staining of any kind. A slight printing imperfection is allowed only if it does not impair the overall appeal of the card.",
+   "quoted": true
+  },
+  {
+   "id": "psa10_front_centering",
+   "text": "Image centered within a tolerance not to exceed approximately 55/45 to 60/40 percent on the front.",
+   "quoted": true,
+   "min_pct": 55,
+   "max_pct": 60
+  },
+  {
+   "id": "psa10_back_centering",
+   "text": "75/25 percent on the reverse.",
+   "quoted": true,
+   "max_pct": 75
+  },
+  {
+   "id": "psa9_front_centering",
+   "text": "A card meeting all other PSA 9 requirements that measures 60/40 on the front automatically meets the PSA 9 front centering standard; it may be deemed to meet it at 65/35 if eye appeal is good.",
+   "quoted": true,
+   "auto_pct": 60,
+   "eye_appeal_pct": 65
+  },
+  {
+   "id": "front_leeway",
+   "text": "A 5% leeway is given to the front centering minimum standards for cards which grade PSA 7 or better.",
+   "quoted": true,
+   "pct": 5
+  },
+  {
+   "id": "eye_appeal",
+   "text": "Graders reserve the right, based on the strength or weakness of eye appeal, to make a judgment call on the grade.",
+   "quoted": true
+  },
+  {
+   "id": "oc_qualifier",
+   "text": "Off-center cards are designated OC or receive a numeric grade reflecting the minimum centering allowed.",
+   "quoted": false
+  }
+ ]
+}
