@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: gradeforge
+    runtime: python
+    pythonVersion: 3.13
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python -m uvicorn gradeforge.app:app --host 0.0.0.0 --port 8000"
+    envVars:
+      - key: GRADEFORGE_PAYWALL
+        value: "1"
+      - key: GRADEFORGE_BASE_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: GRADEFORGE_ADMIN_EMAILS
+        value: "admin@gradeforge.local"
+      - key: GRADEFORGE_TRUST_PROXY
+        value: "1"
+      - key: GRADEFORGE_DATA_DIR
+        value: "/var/data/gradeforge"
