@@ -20,11 +20,10 @@ primary_region = "sjc"
   size = "shared-cpu-1x"
   memory = "512mb"
 
-[checks]
-  [checks.http]
-    grace_period = "10s"
-    interval = "30s"
-    method = "get"
-    path = "/"
-    protocol = "http"
-    timeout = "5s"
+[[checks]]
+  type = "http"
+  grace_period = "10s"
+  interval = "30s"
+  method = "get"
+  path = "/"
+  timeout = "5s"
