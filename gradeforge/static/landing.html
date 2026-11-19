@@ -16,6 +16,12 @@
       line-height: 1.6;
       overflow-x: hidden;
       position: relative;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html[style*="colorScheme: light"] body {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f0f4f8 100%);
+      color: #0f172a;
     }
 
     .animated-bg {
@@ -597,6 +603,170 @@
       transform: translateY(0);
     }
 
+    .theme-toggle {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1.5px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.6);
+    }
+
+    .brands-section {
+      background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.03) 100%);
+      padding: 60px 40px;
+      margin: 60px 0;
+      border-radius: 12px;
+    }
+
+    .brands-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #8b95a7;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .brand-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(14, 165, 233, 0.04) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      padding: 20px 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .brand-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.5);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(14, 165, 233, 0.06) 100%);
+      box-shadow: 0 15px 30px rgba(59, 130, 246, 0.15);
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f0f4f8;
+    }
+
+    html[style*="colorScheme: light"] {
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+    }
+
+    html[style*="colorScheme: light"] nav {
+      background: rgba(255, 255, 255, 0.7) !important;
+      border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+    }
+
+    html[style*="colorScheme: light"] .logo {
+      background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    html[style*="colorScheme: light"] .hero h1,
+    html[style*="colorScheme: light"] .section-title,
+    html[style*="colorScheme: light"] .cta-section h2 {
+      background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    html[style*="colorScheme: light"] .hero .subtitle {
+      color: #64748b;
+    }
+
+    html[style*="colorScheme: light"] .btn-secondary {
+      background: rgba(37, 99, 235, 0.1);
+      color: #2563eb;
+      border: 1.5px solid rgba(37, 99, 235, 0.3);
+    }
+
+    html[style*="colorScheme: light"] .btn-secondary:hover {
+      background: rgba(37, 99, 235, 0.2);
+      border-color: rgba(37, 99, 235, 0.6);
+    }
+
+    html[style*="colorScheme: light"] .theme-toggle {
+      background: rgba(37, 99, 235, 0.1);
+      border: 1.5px solid rgba(37, 99, 235, 0.3);
+      color: #2563eb;
+    }
+
+    html[style*="colorScheme: light"] .theme-toggle:hover {
+      background: rgba(37, 99, 235, 0.2);
+      border-color: rgba(37, 99, 235, 0.6);
+    }
+
+    html[style*="colorScheme: light"] .feature-card,
+    html[style*="colorScheme: light"] .stat,
+    html[style*="colorScheme: light"] .testimonial {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(14, 165, 233, 0.03) 100%);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    html[style*="colorScheme: light"] .brand-card {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(14, 165, 233, 0.04) 100%);
+      border-color: rgba(37, 99, 235, 0.2);
+      color: #0f172a;
+    }
+
+    html[style*="colorScheme: light"] .brand-name {
+      color: #0f172a;
+    }
+
+    html[style*="colorScheme: light"] .comparison {
+      background: rgba(37, 99, 235, 0.03);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    html[style*="colorScheme: light"] .comparison-table th {
+      background: rgba(37, 99, 235, 0.1);
+      color: #2563eb;
+    }
+
+    html[style*="colorScheme: light"] .cta-section {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    html[style*="colorScheme: light"] footer {
+      background: rgba(248, 250, 252, 0.5);
+      border-top: 1px solid rgba(37, 99, 235, 0.1);
+      color: #64748b;
+    }
+
+    html[style*="colorScheme: light"] footer a {
+      color: #2563eb;
+    }
+
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       .logo { font-size: 24px; }
@@ -609,6 +779,8 @@
       .cta-section h2 { font-size: 36px; }
       .comparison-table th,
       .comparison-table td { padding: 12px; font-size: 13px; }
+      .brands-section { padding: 40px 24px; margin: 40px 0; }
+      .brands-grid { gap: 16px; }
     }
   </style>
 </head>
@@ -623,6 +795,7 @@
     <nav>
       <div class="logo">⚡ GradeForge</div>
       <div class="cta">
+        <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">🌙</button>
         <a href="/app" class="btn btn-secondary">Use App →</a>
       </div>
     </nav>
@@ -654,6 +827,27 @@
             <div class="stat-number">Free</div>
             <div class="stat-label">First Grade</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="brands-section">
+      <div class="brands-title">Trusted by collectors of these brands</div>
+      <div class="brands-grid">
+        <div class="brand-card fade-in">
+          <div class="brand-name">Topps</div>
+        </div>
+        <div class="brand-card fade-in">
+          <div class="brand-name">Donruss</div>
+        </div>
+        <div class="brand-card fade-in">
+          <div class="brand-name">Optic</div>
+        </div>
+        <div class="brand-card fade-in">
+          <div class="brand-name">Bowman</div>
+        </div>
+        <div class="brand-card fade-in">
+          <div class="brand-name">Pokemon</div>
         </div>
       </div>
     </section>
@@ -925,6 +1119,40 @@
       const hero = document.querySelector('.hero');
       if (window.scrollY < window.innerHeight) {
         hero.style.transform = `translateY(${window.scrollY * 0.5}px)`;
+      }
+    });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    function updateThemeToggleIcon() {
+      const isDark = html.style.colorScheme === 'dark' || (!html.style.colorScheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = html.style.colorScheme === 'dark' || (!html.style.colorScheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const newTheme = isDark ? 'light' : 'dark';
+      html.style.colorScheme = newTheme;
+      localStorage.setItem('gradeforge-theme', newTheme);
+      updateThemeToggleIcon();
+    });
+
+    // Apply saved theme on load
+    const savedTheme = localStorage.getItem('gradeforge-theme');
+    if (savedTheme) {
+      html.style.colorScheme = savedTheme;
+      updateThemeToggleIcon();
+    } else {
+      updateThemeToggleIcon();
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('gradeforge-theme')) {
+        html.style.colorScheme = e.matches ? 'dark' : 'light';
+        updateThemeToggleIcon();
       }
     });
   </script>
