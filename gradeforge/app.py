@@ -490,6 +490,10 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
     @app.get("/")
+    def landing():
+        return FileResponse(STATIC / "landing.html")
+
+    @app.get("/app")
     @app.get("/admin")
     def index():
         return FileResponse(STATIC / "index.html")
