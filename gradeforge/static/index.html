@@ -77,15 +77,57 @@
   dialog input, dialog select { width:100%; margin:8px 0 14px; } .err { color:var(--bad); font-size:14px; min-height:1.4em; font-weight:500; }
   .big { font-size:24px; font-weight:800; margin:8px 0; color:var(--text); }
   textarea { width:100%; padding:12px 14px; background:var(--bg); color:var(--text); border:1.5px solid var(--line); border-radius:8px; font:inherit; }
-</style>
+  .theme-toggle { background:rgba(59,130,246,0.1); border:1.5px solid rgba(59,130,246,0.3); color:var(--accent); width:36px; height:36px; border-radius:8px; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .theme-toggle:hover { background:rgba(59,130,246,0.2); border-color:rgba(59,130,246,0.6); }
+  .brands-section { background:linear-gradient(180deg, transparent 0%, rgba(59,130,246,0.03) 100%); padding:40px 24px; margin-bottom:24px; border-radius:12px; }
+  .brands-title { text-align:center; font-size:14px; font-weight:700; color:var(--muted); margin-bottom:24px; text-transform:uppercase; letter-spacing:1px; }
+  .brands-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:16px; max-width:900px; margin:0 auto; }
+  .brand-card { background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(14,165,233,0.04) 100%); border:1px solid rgba(59,130,246,0.2); border-radius:10px; padding:16px 12px; text-align:center; transition:all 0.3s ease; cursor:pointer; }
+  .brand-card:hover { transform:translateY(-4px); border-color:rgba(59,130,246,0.5); background:linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(14,165,233,0.06) 100%); box-shadow:0 15px 30px rgba(59,130,246,0.15); }
+  .brand-icon { font-size:36px; margin-bottom:8px; display:block; }
+  .brand-name { font-size:13px; font-weight:700; color:var(--text); margin-bottom:3px; }
+  .brand-type { font-size:11px; color:var(--muted); }
+  </style>
 </head>
 <body>
-<header><h1>GradeForge</h1><span>Evidence-based PSA grade ceilings from card photos. A pre-grading aid, not a PSA opinion.</span><div id="acct" style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div></header>
+<header><h1>GradeForge</h1><span>Evidence-based PSA grade ceilings from card photos. A pre-grading aid, not a PSA opinion.</span><button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">🌙</button> <div id="acct" style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div></header>
 <div id="notice" class="hidden" style="max-width:1100px;margin:10px auto 0;padding:0 16px"></div>
 <nav id="tabs">
   <button data-tab="analyze" class="on">Analyze</button><button data-tab="batch">Batch</button><button data-tab="history">History</button><button data-tab="dataset">Dataset &amp; validation</button><button data-tab="reliability">Accuracy &amp; feedback</button><button data-tab="admin" class="hidden">Admin</button><button data-tab="standards">PSA criteria</button>
 </nav>
-<main>
+<main><section id="tab-dashboard" class="panel" style="display:none;">
+  <div class="brands-section">
+    <div class="brands-title">Analyze All Major Card Brands</div>
+    <div class="brands-grid">
+      <div class="brand-card">
+        <span class="brand-icon">🏟️</span>
+        <div class="brand-name">Topps</div>
+        <div class="brand-type">Baseball, Football</div>
+      </div>
+      <div class="brand-card">
+        <span class="brand-icon">🌟</span>
+        <div class="brand-name">Donruss</div>
+        <div class="brand-type">Baseball, Football</div>
+      </div>
+      <div class="brand-card">
+        <span class="brand-icon">✨</span>
+        <div class="brand-name">Optic</div>
+        <div class="brand-type">Football, Basketball</div>
+      </div>
+      <div class="brand-card">
+        <span class="brand-icon">🎯</span>
+        <div class="brand-name">Bowman</div>
+        <div class="brand-type">Baseball</div>
+      </div>
+      <div class="brand-card">
+        <span class="brand-icon">🔴</span>
+        <div class="brand-name">Pokemon</div>
+        <div class="brand-type">Trading Cards</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="tab-analyze">
   <form id="form" class="panel">
     <div id="slots"></div>
@@ -660,5 +702,39 @@ async function loadStandards() {
 }
 </script>
 <script src="/static/dataset.js"></script>
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  const body = document.body;
+
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      body.classList.remove('light-mode');
+      body.classList.add('dark-mode');
+      themeToggle.textContent = '☀️';
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.classList.remove('dark-mode');
+      body.classList.add('light-mode');
+      themeToggle.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  setTheme(initialTheme);
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const newTheme = e.matches ? 'dark' : 'light';
+    setTheme(newTheme);
+  });
+</script>
 </body>
 </html>
