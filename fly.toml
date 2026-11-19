@@ -19,11 +19,3 @@ primary_region = "sjc"
 [[vm]]
   size = "shared-cpu-1x"
   memory = "512mb"
-
-[[checks]]
-  type = "http"
-  grace_period = "10s"
-  interval = "30s"
-  method = "get"
-  path = "/"
-  timeout = "5s"
