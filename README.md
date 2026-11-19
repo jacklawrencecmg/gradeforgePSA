@@ -2,16 +2,31 @@
 
 Evidence-based PSA grade **ceilings** from card photographs. A pre-grading aid, not a PSA opinion.
 
-## 🚀 Quick Deploy to Render (Free Tier)
+## 🚀 Deploy to Fly.io (Free Tier)
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/jacklawrencecmg/gradeforgePSA)
+**Deploy in 5 minutes:**
 
-**One-click deploy** - Just click above and follow the prompts!
+```bash
+# 1. Install Fly CLI
+# Mac/Linux: curl -L https://fly.io/install.sh | sh
+# Windows: https://github.com/superfly/flyctl/releases
+
+# 2. Login
+flyctl auth login
+
+# 3. Clone & deploy
+git clone https://github.com/jacklawrencecmg/gradeforgePSA.git
+cd gradeforgePSA
+flyctl deploy
+```
 
 **After deployment:**
-1. Add Stripe keys to environment variables (Render dashboard)
-2. Visit your app URL and register admin account
-3. Start grading cards! 🎉
+1. Add Stripe keys: `flyctl secrets set STRIPE_SECRET_KEY=sk_test_...`
+2. Visit your live app (Fly.io provides URL)
+3. Register admin account
+4. Start grading cards! 🎉
+
+See `DEPLOYMENT.md` for detailed instructions.
 
 v0.2 replaces the single-photo wear checks with a multi-stage inspection pipeline: card alignment, registration of
 several photos of the same card, comparison of evidence under different lighting, defect candidates with annotated
