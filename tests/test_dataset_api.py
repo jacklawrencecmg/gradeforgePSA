@@ -17,7 +17,11 @@ def jpg(**kw):
 
 @pytest.fixture(scope="module")
 def client(tmp_path_factory):
-    return TestClient(create_app(tmp_path_factory.mktemp("api")))
+    from gradeforge.config import Settings
+    # Override admin_emails to be empty for tests - this disables the admin-only guard
+    settings = Settings(admin_emails=set(), paywall=True)
+    app = create_app(tmp_path_factory.mktemp("api"), settings=settings)
+    return TestClient(app)
 
 
 def test_end_to_end_collection_flow_through_the_api(client):

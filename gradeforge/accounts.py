@@ -186,8 +186,7 @@ class Accounts:
         temp_password = secrets.token_urlsafe(12)
         
         with self._c() as c:
-            c.execute("SELECT id FROM users WHERE email = ?", (email,))
-            user = c.fetchone()
+            user = c.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
             
             if not user:
                 raise AuthError("Account not found.", 404)

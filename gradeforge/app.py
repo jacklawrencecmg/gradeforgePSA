@@ -553,3 +553,4 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
 
 load_env_file()
 app = create_app()
+
