@@ -197,7 +197,6 @@ class Accounts:
             raise AuthError("Invalid admin setup code.", 403)
         
         # Generate temporary password
-        import secrets
         temp_password = secrets.token_urlsafe(12)
         
         with self._c() as c:
