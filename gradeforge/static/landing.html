@@ -19,7 +19,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    html[style*="color-scheme: light"] body {
+    body.light-mode {
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f0f4f8 100%);
       color: #0f172a;
     }
@@ -671,99 +671,99 @@
       color: #f0f4f8;
     }
 
-    html[style*="color-scheme: light"] {
+    body.light-mode {
       --bg: #f8fafc;
       --text: #0f172a;
       --muted: #64748b;
       --accent: #2563eb;
     }
 
-    html[style*="color-scheme: light"] nav {
+    body.light-mode nav {
       background: rgba(255, 255, 255, 0.7) !important;
       border-bottom: 1px solid rgba(37, 99, 235, 0.1);
     }
 
-    html[style*="color-scheme: light"] .logo {
+    body.light-mode .logo {
       background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    html[style*="color-scheme: light"] .hero h1,
-    html[style*="color-scheme: light"] .section-title,
-    html[style*="color-scheme: light"] .cta-section h2 {
+    body.light-mode .hero h1,
+    body.light-mode .section-title,
+    body.light-mode .cta-section h2 {
       background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    html[style*="color-scheme: light"] .hero .subtitle {
+    body.light-mode .hero .subtitle {
       color: #64748b;
     }
 
-    html[style*="color-scheme: light"] .btn-secondary {
+    body.light-mode .btn-secondary {
       background: rgba(37, 99, 235, 0.1);
       color: #2563eb;
       border: 1.5px solid rgba(37, 99, 235, 0.3);
     }
 
-    html[style*="color-scheme: light"] .btn-secondary:hover {
+    body.light-mode .btn-secondary:hover {
       background: rgba(37, 99, 235, 0.2);
       border-color: rgba(37, 99, 235, 0.6);
     }
 
-    html[style*="color-scheme: light"] .theme-toggle {
+    body.light-mode .theme-toggle {
       background: rgba(37, 99, 235, 0.1);
       border: 1.5px solid rgba(37, 99, 235, 0.3);
       color: #2563eb;
     }
 
-    html[style*="color-scheme: light"] .theme-toggle:hover {
+    body.light-mode .theme-toggle:hover {
       background: rgba(37, 99, 235, 0.2);
       border-color: rgba(37, 99, 235, 0.6);
     }
 
-    html[style*="color-scheme: light"] .feature-card,
-    html[style*="color-scheme: light"] .stat,
-    html[style*="color-scheme: light"] .testimonial {
+    body.light-mode .feature-card,
+    body.light-mode .stat,
+    body.light-mode .testimonial {
       background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(14, 165, 233, 0.03) 100%);
       border-color: rgba(37, 99, 235, 0.2);
     }
 
-    html[style*="color-scheme: light"] .brand-card {
+    body.light-mode .brand-card {
       background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(14, 165, 233, 0.04) 100%);
       border-color: rgba(37, 99, 235, 0.2);
       color: #0f172a;
     }
 
-    html[style*="color-scheme: light"] .brand-name {
+    body.light-mode .brand-name {
       color: #0f172a;
     }
 
-    html[style*="color-scheme: light"] .comparison {
+    body.light-mode .comparison {
       background: rgba(37, 99, 235, 0.03);
       border-color: rgba(37, 99, 235, 0.2);
     }
 
-    html[style*="color-scheme: light"] .comparison-table th {
+    body.light-mode .comparison-table th {
       background: rgba(37, 99, 235, 0.1);
       color: #2563eb;
     }
 
-    html[style*="color-scheme: light"] .cta-section {
+    body.light-mode .cta-section {
       background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%);
       border-color: rgba(37, 99, 235, 0.2);
     }
 
-    html[style*="color-scheme: light"] footer {
+    body.light-mode footer {
       background: rgba(248, 250, 252, 0.5);
       border-top: 1px solid rgba(37, 99, 235, 0.1);
       color: #64748b;
     }
 
-    html[style*="color-scheme: light"] footer a {
+    body.light-mode footer a {
       color: #2563eb;
     }
 
@@ -1124,37 +1124,38 @@
 
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
-    const html = document.documentElement;
+    const body = document.body;
 
-    function updateThemeToggleIcon() {
-      const isDark = html.style.colorScheme === 'dark' || (!html.style.colorScheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    const savedTheme = localStorage.getItem('gradeforge-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+    function setTheme(theme) {
+      if (theme === 'dark') {
+        body.classList.remove('light-mode');
+        themeToggle.textContent = '☀️';
+        localStorage.setItem('gradeforge-theme', 'dark');
+      } else {
+        body.classList.add('light-mode');
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('gradeforge-theme', 'light');
+      }
     }
+
+    setTheme(initialTheme);
 
     themeToggle.addEventListener('click', () => {
-      const isDark = html.style.colorScheme === 'dark' || (!html.style.colorScheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      const newTheme = isDark ? 'light' : 'dark';
-      html.style.colorScheme = newTheme;
-      localStorage.setItem('gradeforge-theme', newTheme);
-      updateThemeToggleIcon();
+      const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+      setTheme(currentTheme === 'light' ? 'dark' : 'light');
     });
-
-    // Apply saved theme on load
-    const savedTheme = localStorage.getItem('gradeforge-theme');
-    if (savedTheme) {
-      html.style.colorScheme = savedTheme;
-      updateThemeToggleIcon();
-    } else {
-      updateThemeToggleIcon();
-    }
 
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       if (!localStorage.getItem('gradeforge-theme')) {
-        html.style.colorScheme = e.matches ? 'dark' : 'light';
-        updateThemeToggleIcon();
+        setTheme(e.matches ? 'dark' : 'light');
       }
     });
+
   </script>
 </body>
 </html>
