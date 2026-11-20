@@ -184,7 +184,7 @@ document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
 async function api(path, opts) {
   const r = await fetch(path, opts);
   if (!r.ok) { let d = r.statusText; try { d = (await r.json()).detail || d; } catch {}
-    const e = new Error(typeof d === 'object' ? d.message : (typeof d === 'string' ? d : 'Request failed')); e.status = r.status; e.detail = d; throw e; }
+    const e = new Error(typeof d === 'object' ? (d.message || d.code || 'Error: ' + JSON.stringify(d)) : (typeof d === 'string' ? d : 'Request failed')); e.status = r.status; e.detail = d; throw e; 
   return r.json();
 }
 
@@ -195,7 +195,7 @@ $('#form').addEventListener('submit', async e => {
     const fd = new FormData(e.target);
     const data = await api('/api/analyze', {method:'POST', body:fd});
     st.textContent = ''; renderResult($('#result'), data); refreshMe();
-  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#result')); refreshMe(); } else st.textContent = 'Error: ' + (err.detail?.message || err.message || 'Analysis failed'); }
+  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#result')); refreshMe(); } else st.textContent = 'Error: ' + err.message; }
   btn.disabled = false;
 });
 
