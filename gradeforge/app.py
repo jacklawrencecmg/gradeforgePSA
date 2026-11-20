@@ -242,6 +242,15 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
     @app.get("/api/health")
     def health():
         return {"status": "ok", "version": __version__, "standards_versions": available_versions()}
+    @app.get("/api/admin/setup-code")
+    def get_setup_code():
+        """Debug endpoint: return current admin setup code"""
+        if not acct:
+            return {"error": "Paywall not enabled"}
+        code_file = acct.admin_code_file
+        if code_file.exists():
+            return {"setup_code": code_file.read_text().strip()}
+        return {"error": "No setup code found"}
 
     @app.get("/api/photo-guide")
     def photo_guide():

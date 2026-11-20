@@ -84,8 +84,8 @@
   .brands-section { background:linear-gradient(180deg, transparent 0%, rgba(59,130,246,0.03) 100%); padding:40px 24px; margin-bottom:24px; border-radius:12px; }
   .brands-title { text-align:center; font-size:14px; font-weight:700; color:var(--muted); margin-bottom:24px; text-transform:uppercase; letter-spacing:1px; }
   .brands-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:16px; max-width:900px; margin:0 auto; }
-  .brand-card { background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(14,165,233,0.04) 100%); border:1px solid rgba(59,130,246,0.2); border-radius:10px; padding:16px 12px; text-align:center; transition:all 0.3s ease; cursor:pointer; }
-  .brand-card:hover { transform:translateY(-4px); border-color:rgba(59,130,246,0.5); background:linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(14,165,233,0.06) 100%); box-shadow:0 15px 30px rgba(59,130,246,0.15); }
+  .brand-card { background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(14,165,233,0.04) 100%); border:1px solid rgba(59,130,246,0.2); border-radius:10px; padding:16px 12px; text-align:center; transition:all 0.3s ease; cursor:pointer; position:relative; will-change:box-shadow; overflow:hidden; }
+  .brand-card:hover { border-color:rgba(59,130,246,0.5); background:linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(14,165,233,0.06) 100%); box-shadow:0 8px 16px rgba(59,130,246,0.2); }
   .brand-icon { font-size:36px; margin-bottom:8px; display:block; }
   .brand-name { font-size:13px; font-weight:700; color:var(--text); margin-bottom:3px; }
   .brand-type { font-size:11px; color:var(--muted); }
