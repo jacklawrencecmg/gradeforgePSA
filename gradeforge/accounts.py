@@ -145,6 +145,20 @@ class Accounts:
             if not (code and real and hmac.compare_digest(code.strip(), real)):
                 self._note("signup", iph)
                 raise AuthError("This email is reserved for the site administrator. Enter the admin setup code (printed in the server log and saved in admin_setup_code.txt in the data folder).", 403)
+            # For admin emails with correct code: allow creating new account or resetting existing one
+            with self._c() as c:
+                c.execute("SELECT id FROM users WHERE email = ?", (email,))
+                existing = c.fetchone()
+                if existing:
+                    # Update existing admin account password
+                    uid = existing[0]
+                    c.execute("UPDATE users SET pw_hash = ? WHERE id = ?", (_hash_pw(password), uid))
+                else:
+                    # Create new admin account
+                    uid = uuid.uuid4().hex
+                    c.execute("INSERT INTO users(id,email,pw_hash,created) VALUES (?,?,?,?)", (uid, email, _hash_pw(password), time.time()))
+            self._note("signup", iph)
+            return self.user(uid)
         uid = uuid.uuid4().hex
         try:
             with self._c() as c:
