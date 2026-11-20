@@ -22,6 +22,7 @@ from .standards import available_versions, load_standards
 from .storage import Store
 from . import accounts as acc_mod, billing, dataset_api, shots
 from .config import Settings, load_env_file
+from .valuation import get_valuation_service
 
 MAX_FILE_BYTES = 30 * 1024 * 1024
 MAX_BATCH_CARDS = 100
@@ -474,6 +475,33 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
     @app.get("/api/history/{aid}/audit")
     def audit(aid: str):
         return {"items": store.audit_log(aid)}
+
+    @app.get("/api/valuation/{aid}")
+    def get_card_valuation(aid: str):
+        """Get estimated card value based on recent market data (eBay, Card Ladder)."""
+        rec = store.get(aid)
+        if rec is None:
+            raise HTTPException(404, "Unknown analysis id")
+
+        valuation_service = get_valuation_service()
+        valuation = valuation_service.get_valuation_for_result(rec)
+        return valuation
+
+    @app.post("/api/valuation")
+    def lookup_card_value(card_name: str, set_name: str = "", card_number: str = "", grade: int | None = None, finish: str = "standard"):
+        """
+        Look up estimated card value.
+
+        Query parameters:
+        - card_name: e.g. "Charizard ex"
+        - set_name: e.g. "Scarlet & Violet" (optional)
+        - card_number: e.g. "223" (optional)
+        - grade: PSA grade 1-10 (optional)
+        - finish: standard, chrome, refractor, etc.
+        """
+        valuation_service = get_valuation_service()
+        valuation = valuation_service.get_valuation(card_name, set_name, card_number, grade, finish)
+        return valuation
 
     @app.get("/api/history/{aid}/report.pdf")
     def report(aid: str):
