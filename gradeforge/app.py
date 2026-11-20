@@ -333,8 +333,7 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
                 acct.refund(ticket)
             import traceback
             error_msg = str(e) or "Analysis failed. Please try again or check your image quality."
-            print(f"[GradeForge] Analysis error: {error_msg}
-{traceback.format_exc()}", flush=True)
+            print(f"[GradeForge] Analysis error: {error_msg}\n{traceback.format_exc()}", flush=True)
             raise HTTPException(500, {"code": "analysis_error", "message": error_msg})
         if acct:
             anon = request.cookies.get(acc_mod.COOKIE_ANON) or (None if user else uuid.uuid4().hex)
@@ -390,8 +389,7 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
                 if acct and not rows:
                     acct.refund(ticket)
                 import traceback
-                print(f"[GradeForge] Batch analysis error on card {card}: {str(e)}
-{traceback.format_exc()}", flush=True)
+                print(f"[GradeForge] Batch analysis error on card {card}: {str(e)}\n{traceback.format_exc()}", flush=True)
                 raise
             aid = store.save(card[:120], result, arts)
             store.log_prediction(aid, result)
