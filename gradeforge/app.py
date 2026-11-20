@@ -242,7 +242,7 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
     @app.get("/api/health")
     def health():
         return {"status": "ok", "version": __version__, "standards_versions": available_versions()}
-    @app.get("/api/admin/setup-code")
+    @app.get("/api/setup-code")
     def get_setup_code():
         """Debug endpoint: return current admin setup code"""
         if not acct:
