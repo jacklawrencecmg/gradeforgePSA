@@ -195,7 +195,7 @@ $('#form').addEventListener('submit', async e => {
     const fd = new FormData(e.target);
     const data = await api('/api/analyze', {method:'POST', body:fd});
     st.textContent = ''; renderResult($('#result'), data); refreshMe();
-  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#result')); refreshMe(); } else st.textContent = 'Error: ' + err.message; }
+  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#result')); refreshMe(); } else st.textContent = 'Error: ' + (err.detail?.message || err.message || 'Analysis failed'); }
   btn.disabled = false;
 });
 
@@ -652,7 +652,7 @@ $('#bform').addEventListener('submit', async e => {
     const t = el('table', {}, el('tr', {}, ['Card','Status','Conservative','Optimistic','PSA 10','Report'].map(h => el('th',{},h))));
     data.results.forEach(r => t.append(el('tr',{}, el('td',{}, r.card), el('td',{}, pretty(r.status) + (r.reasons.length ? ': ' + r.reasons[0] : '')), el('td',{}, r.conservative ?? '—'), el('td',{}, r.optimistic ?? '—'), el('td',{}, pretty(r.psa10)), el('td',{}, el('a',{href:`/api/history/${r.id}/report.pdf`}, 'PDF')))));
     $('#bresult').replaceChildren(el('div',{class:'panel'}, el('p',{}, `${data.count} cards analyzed (saved to History).`), t));
-  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#bresult')); } else st.textContent = 'Error: ' + err.message; }
+  } catch (err) { if (err.status === 402) { st.textContent = ''; showPaywall(err.detail, $('#bresult')); } else st.textContent = 'Error: ' + (err.detail?.message || err.message || 'Analysis failed'); }
 });
 
 async function loadHistory() {
