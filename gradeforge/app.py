@@ -162,6 +162,14 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
             acct.end_session(request.cookies.get(acc_mod.COOKIE_SESSION))
             response.delete_cookie(acc_mod.COOKIE_SESSION, path="/")
             return {"ok": True}
+        @app.post("/api/auth/reset-password")
+        def reset_password(body: Credentials):
+            """Reset admin password with setup code"""
+            try:
+                result = acct.reset_admin_password(body.email, body.code)
+                return result
+            except acc_mod.AuthError as e:
+                raise HTTPException(e.status, e.message)
 
         def _base(request: Request) -> str:
             return cfg.base_url or str(request.base_url).rstrip("/")
