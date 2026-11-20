@@ -145,20 +145,6 @@ class Accounts:
             if not (code and real and hmac.compare_digest(code.strip(), real)):
                 self._note("signup", iph)
                 raise AuthError("This email is reserved for the site administrator. Enter the admin setup code (printed in the server log and saved in admin_setup_code.txt in the data folder).", 403)
-            # For admin emails with correct code: allow creating new account or resetting existing one
-            with self._c() as c:
-                c.execute("SELECT id FROM users WHERE email = ?", (email,))
-                existing = c.fetchone()
-                if existing:
-                    # Update existing admin account password
-                    uid = existing[0]
-                    c.execute("UPDATE users SET pw_hash = ? WHERE id = ?", (_hash_pw(password), uid))
-                else:
-                    # Create new admin account
-                    uid = uuid.uuid4().hex
-                    c.execute("INSERT INTO users(id,email,pw_hash,created) VALUES (?,?,?,?)", (uid, email, _hash_pw(password), time.time()))
-            self._note("signup", iph)
-            return self.user(uid)
         uid = uuid.uuid4().hex
         try:
             with self._c() as c:
@@ -186,30 +172,6 @@ class Accounts:
             raise AuthError("Incorrect email or password.", 401)
         return self.user(row["id"])
 
-    def reset_admin_password(self, email: str, code: str) -> dict:
-        """Reset password for admin account with correct setup code"""
-        email = (email or "").strip().lower()
-        if email not in self.s.admin_emails:
-            raise AuthError("This email is not an admin account.", 403)
-        
-        real = self.admin_code_file.read_text().strip() if self.admin_code_file.exists() else ""
-        if not (code and real and hmac.compare_digest(code.strip(), real)):
-            raise AuthError("Invalid admin setup code.", 403)
-        
-        # Generate temporary password
-        temp_password = secrets.token_urlsafe(12)
-        
-        with self._c() as c:
-            c.execute("SELECT id FROM users WHERE email = ?", (email,))
-            user = c.fetchone()
-            
-            if not user:
-                raise AuthError("Account not found.", 404)
-            
-            uid = user[0]
-            c.execute("UPDATE users SET pw_hash = ? WHERE id = ?", (_hash_pw(temp_password), uid))
-        
-        return {"ok": True, "temporary_password": temp_password, "message": "Password reset successful. Use this temporary password to login, then change it in settings."}
     def new_session(self, user_id: str) -> str:
         token = secrets.token_urlsafe(32)
         with self._c() as c:
