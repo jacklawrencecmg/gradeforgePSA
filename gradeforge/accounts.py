@@ -172,6 +172,30 @@ class Accounts:
             raise AuthError("Incorrect email or password.", 401)
         return self.user(row["id"])
 
+    def reset_admin_password(self, email: str, code: str) -> dict:
+        """Reset password for admin account with correct setup code"""
+        email = (email or "").strip().lower()
+        if email not in self.s.admin_emails:
+            raise AuthError("This email is not an admin account.", 403)
+        
+        real = self.admin_code_file.read_text().strip() if self.admin_code_file.exists() else ""
+        if not (code and real and hmac.compare_digest(code.strip(), real)):
+            raise AuthError("Invalid admin setup code.", 403)
+        
+        # Generate temporary password
+        temp_password = secrets.token_urlsafe(12)
+        
+        with self._c() as c:
+            c.execute("SELECT id FROM users WHERE email = ?", (email,))
+            user = c.fetchone()
+            
+            if not user:
+                raise AuthError("Account not found.", 404)
+            
+            uid = user[0]
+            c.execute("UPDATE users SET pw_hash = ? WHERE id = ?", (_hash_pw(temp_password), uid))
+        
+        return {"ok": True, "temporary_password": temp_password, "message": "Password reset successful. Use this temporary password to login, then change it in settings."}
     def new_session(self, user_id: str) -> str:
         token = secrets.token_urlsafe(32)
         with self._c() as c:
