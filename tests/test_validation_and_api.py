@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from gradeforge.app import create_app
+from gradeforge.config import Settings
 from gradeforge.validation import can_calibrate, compute_metrics, cross_validated_brier, evaluate_dataset
 from tests import synth
 
@@ -59,7 +60,7 @@ def test_cv_brier_runs_and_baseline_is_reported():
 
 @pytest.fixture()
 def client(tmp_path):
-    return TestClient(create_app(tmp_path))
+    return TestClient(create_app(tmp_path, Settings(paywall=False)))
 
 
 def jpg(**kw):
@@ -74,7 +75,6 @@ def test_health_and_standards(client):
     assert client.get("/").status_code == 200
 
 
-@pytest.mark.skip(reason="Pre-existing test - API response schema mismatch")
 def test_analyze_history_outcome_pdf_roundtrip(client):
     r = client.post("/api/analyze", files={"front": ("f.jpg", jpg(), "image/jpeg"), "back": ("b.jpg", jpg(seed=3), "image/jpeg")},
                     data={"label": "Test card <b>x</b>"})

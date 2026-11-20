@@ -3,6 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from gradeforge.app import create_app
+from gradeforge.config import Settings
 from . import synth
 
 
@@ -13,7 +14,7 @@ def jpg(**kw):
 
 @pytest.fixture()
 def client(tmp_path):
-    return TestClient(create_app(tmp_path))
+    return TestClient(create_app(tmp_path, Settings(paywall=False)))
 
 
 def test_analyze_returns_gem_block_and_feedback_flow(client):
