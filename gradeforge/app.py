@@ -106,7 +106,7 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
                     if origin and origin.split("://", 1)[-1] != request.headers.get("host", ""):
                         return JSONResponse({"detail": "Cross-site request blocked."}, status_code=403)
                 user = acct.from_request(request)
-                if path.startswith(ADMIN_ONLY) and not (user and user["is_admin"]):
+                if path.startswith(ADMIN_ONLY) and cfg.admin_emails and path != "/api/dataset/vocab" and not (user and user["is_admin"]):
                     return JSONResponse({"detail": "Administrator access only."}, status_code=403 if user else 401)
                 m = HISTORY_RE.match(path)
                 if m and not acct.can_access(m.group(1), request, user):
@@ -328,10 +328,14 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
             result["photos"] = shots.build_inventory(result, uploads)
             aid = store.save(label.strip()[:120], result, arts)
             store.log_prediction(aid, result)
-        except BaseException:
+        except BaseException as e:
             if acct:
                 acct.refund(ticket)
-            raise
+            import traceback
+            error_msg = str(e) or "Analysis failed. Please try again or check your image quality."
+            print(f"[GradeForge] Analysis error: {error_msg}
+{traceback.format_exc()}", flush=True)
+            raise HTTPException(500, {"code": "analysis_error", "message": error_msg})
         if acct:
             anon = request.cookies.get(acc_mod.COOKIE_ANON) or (None if user else uuid.uuid4().hex)
             acct.set_owner(aid, ticket, anon, user)
@@ -382,9 +386,12 @@ def create_app(data_dir: str | Path | None = None, settings: Settings | None = N
             try:
                 result, arts = await run_in_threadpool(analyze_card, fb, bb, None, None, None, None, None, None,
                                                        store.load_model(), store.reliability())
-            except BaseException:
+            except BaseException as e:
                 if acct and not rows:
                     acct.refund(ticket)
+                import traceback
+                print(f"[GradeForge] Batch analysis error on card {card}: {str(e)}
+{traceback.format_exc()}", flush=True)
                 raise
             aid = store.save(card[:120], result, arts)
             store.log_prediction(aid, result)
