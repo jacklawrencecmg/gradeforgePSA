@@ -215,7 +215,7 @@ class Accounts:
         d = dict(r)
         d.pop("pw_hash", None)
         d["credits"] = d.get("credits") or 0
-        d["subscribed"] = self.is_subscribed(d)
+        d["subscribed"] = d["email"] in self.s.admin_emails or self.is_subscribed(d)
         d["is_admin"] = d["email"] in self.s.admin_emails
         return d
 
