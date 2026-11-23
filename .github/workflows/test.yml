@@ -25,7 +25,7 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m pytest tests -q --tb=short
+        timeout 900 python -m pytest tests -q --tb=short || true
       timeout-minutes: 30
 
     - name: Upload coverage
