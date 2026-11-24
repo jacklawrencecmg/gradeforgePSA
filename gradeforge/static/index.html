@@ -469,7 +469,8 @@ function renderResult(root, data) {
   refreshAssessment();
 
   const actions = el('div', {class:'panel'});
-  actions.append(el('a', {href:`/api/history/${data.id}/report.pdf`}, el('button', {class:'ghost', type:'button'}, 'Download PDF report')), ' ');
+  actions.append(el('a', {href:`/api/history/${data.id}/report.pdf`}, el('button', {class:'ghost', type:'button'}, 'Download PDF report')), ' ',
+    el('button', {class:'primary', type:'button', onclick: () => { $('#form').reset(); $('#result').replaceChildren(); }}, 'Analyze a new card'), ' ');
   const sel = el('select', {style:'width:auto'}, [...Array(10)].map((_,k) => el('option', {value:10-k}, 'PSA ' + (10-k))));
   const qual = el('select', {style:'width:auto'}, ['', 'OC','MK','ST','PD','OF','MC'].map(q => el('option', {value:q}, q || 'no qualifier')));
   const pre = el('input', {type:'checkbox'}); pre.checked = true;
