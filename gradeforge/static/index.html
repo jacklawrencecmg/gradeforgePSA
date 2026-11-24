@@ -69,8 +69,8 @@
   .blocks_10,.severe { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); } .not_assessable { color:var(--unk); border-color:var(--unk); background:rgba(107,114,128,0.08); }
   button.ghost.on { border-color:var(--accent); color:var(--accent); background:rgba(59,130,246,0.1); }
   .side { border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:14px; background:rgba(59,130,246,0.02); } .cat { border-top:1px solid var(--line); padding:8px 0; } .cat h4 { margin:8px 0 4px; font-weight:700; }
-    .slot { position:relative; padding:12px 0; } .slot input[type=file] { width:100%; } .slot .del-btn { position:absolute; top:0; right:0; background:var(--bad); color:#fff; border:0; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer; opacity:0.7; transition:opacity 0.2s; } .slot .del-btn:hover { opacity:1; }
-  .slot input[type=file] { width:100%; } .plain .big { font-size:22px; font-weight:700; } .rangebox { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin:12px 0; }
+    .slot { position:relative; padding:12px 0; } .slot .del-btn { position:absolute; top:0; right:0; background:var(--bad); color:#fff; border:0; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer; opacity:0.7; transition:opacity 0.2s; } .slot .del-btn:hover { opacity:1; }
+  .plain .big { font-size:22px; font-weight:700; } .rangebox { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin:12px 0; }
   .rangebox > div { border:1px solid var(--line); border-radius:10px; padding:12px; background:linear-gradient(135deg, rgba(59,130,246,0.03) 0%, transparent 100%); transition:all 0.2s ease; }
   .rangebox > div:hover { border-color:var(--accent); }
   .rangebox b { display:block; font-size:24px; color:var(--accent); margin-bottom:4px; } .rangebox small { color:var(--muted); font-weight:500; }
@@ -196,6 +196,16 @@
     .viewer { height:250px; }
   }
 
+  input[type=file] { 
+    display:block; 
+    width:100% !important; 
+    padding:12px 14px !important; 
+    cursor:pointer !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+  }
+  
 </style>
 </head>
 <body>
