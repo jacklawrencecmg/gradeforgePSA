@@ -69,6 +69,7 @@
   .blocks_10,.severe { color:var(--bad); border-color:var(--bad); background:rgba(239,68,68,0.08); } .not_assessable { color:var(--unk); border-color:var(--unk); background:rgba(107,114,128,0.08); }
   button.ghost.on { border-color:var(--accent); color:var(--accent); background:rgba(59,130,246,0.1); }
   .side { border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:14px; background:rgba(59,130,246,0.02); } .cat { border-top:1px solid var(--line); padding:8px 0; } .cat h4 { margin:8px 0 4px; font-weight:700; }
+    .slot { position:relative; padding:12px 0; } .slot input[type=file] { width:100%; } .slot .del-btn { position:absolute; top:0; right:0; background:var(--bad); color:#fff; border:0; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer; opacity:0.7; transition:opacity 0.2s; } .slot .del-btn:hover { opacity:1; }
   .slot input[type=file] { width:100%; } .plain .big { font-size:22px; font-weight:700; } .rangebox { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin:12px 0; }
   .rangebox > div { border:1px solid var(--line); border-radius:10px; padding:12px; background:linear-gradient(135deg, rgba(59,130,246,0.03) 0%, transparent 100%); transition:all 0.2s ease; }
   .rangebox > div:hover { border-color:var(--accent); }
@@ -399,8 +400,10 @@ const CORNERS=[['tl','Top-left corner'],['tr','Top-right corner'],['br','Bottom-
 const EDGES=[['top','Top edge'],['right','Right edge'],['bottom','Bottom edge'],['left','Left edge']];
 function fileField(name, label, opts={}) {
   const inp = el('input', {type:'file', name, accept:'image/*'}); if (opts.multiple) inp.multiple = true; if (opts.required) inp.required = true;
-  const tag = el('span', {class:'note'}); inp.addEventListener('change', () => { tag.textContent = inp.files.length ? '✓ ' + [...inp.files].map(f => f.name).join(', ') : ''; });
-  return el('div', {class:'slot'}, el('label', {}, label), inp, tag);
+  const tag = el('span', {class:'note'}); inp.addEventListener('change', () => { tag.textContent = inp.files.length ? '✓ ' + [...inp.files].map(f => f.name).join(', ') : ''; delBtn.style.display = inp.files.length ? 'block' : 'none'; });
+  const delBtn = el('button', {class:'del-btn', type:'button', onclick: (e) => { e.preventDefault(); inp.value = ''; tag.textContent = ''; delBtn.style.display = 'none'; inp.dispatchEvent(new Event('change')); }}, 'Remove');
+  delBtn.style.display = 'none';
+  return el('div', {class:'slot'}, el('label', {}, label), inp, delBtn, tag);
 }
 async function buildSlots() {
   let g = {}; try { g = await api('/api/photo-guide'); } catch {}
