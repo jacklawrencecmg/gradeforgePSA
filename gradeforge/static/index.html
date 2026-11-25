@@ -163,40 +163,7 @@
     .chip { font-size:9px; padding:1px 4px; }
     dialog { width:min(98vw, 350px); padding:10px; }
   }
-    @media (max-width:768px) {
-    section { padding:0 !important; }
-    #tab-analyze, #tab-batch, #tab-history, #tab-dataset, #tab-reliability, #tab-admin, #tab-standards { overflow-x:hidden; }
-    #bform, #hist, #ds, #rel, #adminbox, #stds { width:100%; overflow-x:hidden; }
-    #form { width:100%; }
-    #result { width:100%; overflow-x:hidden; }
-    #bresult { width:100%; overflow-x:hidden; }
-    .viewer { width:100%; height:300px; overflow:hidden; }
-    .viewer canvas { width:100%; height:100%; display:block; }
-    table { width:100%; table-layout:auto; word-wrap:break-word; }
-    th, td { max-width:60px; padding:4px 2px; word-break:break-word; font-size:10px; }
-    tr { display:flex; flex-wrap:wrap; gap:2px; margin-bottom:4px; }
-    thead { display:none; }
-    td { flex:0 0 48%; border:1px solid var(--line); }
-    td::before { content:attr(data-label); font-weight:bold; }
-    .split { grid-template-columns:1fr !important; }
-    .grid { grid-auto-flow:dense; }
-    ul, ol { margin:4px 0; padding-left:16px; }
-    li { font-size:12px; margin:2px 0; }
-    .crops { grid-template-columns:repeat(2, 1fr); gap:4px; }
-    .crop { padding:4px; }
-    .crop img { width:100%; }
-  }
-
-  @media (max-width:480px) {
-    section { padding:0 !important; }
-    #bform, #hist, #ds, #rel, #adminbox, #stds { width:100vw; margin-left:calc(-50vw + 50%); padding:0 12px; }
-    table { font-size:9px; }
-    th, td { padding:2px 1px; max-width:50px; }
-    .crops { grid-template-columns:repeat(2, 1fr); gap:3px; }
-    .viewer { height:250px; }
-  }
-
-</style>
+  </style>
 </head>
 <body>
 <header><h1>GradeForge</h1><span>Evidence-based PSA grade ceilings from card photos. A pre-grading aid, not a PSA opinion.</span><button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">🌙</button> <div id="acct" style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div></header>
