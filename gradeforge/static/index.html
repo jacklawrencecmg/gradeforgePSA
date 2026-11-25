@@ -621,7 +621,7 @@ const CLS_LABEL = {physical:'physical-probable / measured', indeterminate:'indet
 
 function viewerPanel(data, sides, onAssessment) {
   const root = el('div', {class:'panel'}, el('h3', {}, 'Defect map'),
-    el('p', {class:'note'}, 'Every marker is a candidate until you confirm it. Click a marker or list row to see the original-photo crops behind it. Drag to pan, scroll or pinch to zoom, double-click to reset.'));
+    el('p', {class:'note'}, '<strong>🎯 Reduce Flags Here:</strong> Click any colored marker (flag) on the image to review it. Enter your name and notes, then click <strong>Confirm</strong> (it's real) or <strong>Reject</strong> (it's not damage). Green = confirmed real damage. This lets the app learn and show your true grade.<br><br>Every marker is a candidate until you confirm it. Click a marker or list row to see the original-photo crops behind it. Drag to pan, scroll or pinch to zoom, double-click to reset.'));
   const sideSel = el('select', {style:'width:auto'}, sides.map(s => el('option', {value:s}, s)));
   const flt = {physical:true, indeterminate:true, artifact:false, rejected:false, centering:false};
   const toggles = el('div', {class:'toggles'}, sideSel,
