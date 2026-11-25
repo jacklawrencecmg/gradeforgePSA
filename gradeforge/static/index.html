@@ -206,10 +206,6 @@
     pointer-events:auto !important;
   }
   
-  .file-wrapper { position:relative; display:block; }
-  .file-wrapper input[type=file] { display:block !important; width:100% !important; padding:12px 14px !important; cursor:pointer !important; opacity:1 !important; visibility:visible !important; z-index:1; }
-  .file-wrapper .del-btn { position:absolute; top:8px; right:8px; z-index:2; }
-  
 </style>
 </head>
 <body>
@@ -518,15 +514,11 @@ async function loadAdmin(days) {
 const CORNERS=[['tl','Top-left corner'],['tr','Top-right corner'],['br','Bottom-right corner'],['bl','Bottom-left corner']];
 const EDGES=[['top','Top edge'],['right','Right edge'],['bottom','Bottom edge'],['left','Left edge']];
 function fileField(name, label, opts={}) {
-  const inp = el('input', {type:'file', name, accept:'image/*', style:'width:100%;cursor:pointer;'}); 
-  if (opts.multiple) inp.multiple = true; 
-  if (opts.required) inp.required = true;
-  const tag = el('span', {class:'note'}); 
+  const inp = el('input', {type:'file', name, accept:'image/*'}); if (opts.multiple) inp.multiple = true; if (opts.required) inp.required = true;
+  const tag = el('span', {class:'note'}); inp.addEventListener('change', () => { tag.textContent = inp.files.length ? '✓ ' + [...inp.files].map(f => f.name).join(', ') : ''; delBtn.style.display = inp.files.length ? 'block' : 'none'; });
   const delBtn = el('button', {class:'del-btn', type:'button', onclick: (e) => { e.preventDefault(); inp.value = ''; tag.textContent = ''; delBtn.style.display = 'none'; inp.dispatchEvent(new Event('change')); }}, 'Remove');
   delBtn.style.display = 'none';
-  inp.addEventListener('change', () => { tag.textContent = inp.files.length ? '✓ ' + [...inp.files].map(f => f.name).join(', ') : ''; delBtn.style.display = inp.files.length ? 'block' : 'none'; });
-  const wrapper = el('div', {class:'file-wrapper'}, inp, delBtn);
-  return el('div', {class:'slot'}, el('label', {}, label), wrapper, tag);
+  return el('div', {class:'slot'}, el('label', {}, label), inp, delBtn, tag);
 }
 async function buildSlots() {
   let g = {}; try { g = await api('/api/photo-guide'); } catch {}
